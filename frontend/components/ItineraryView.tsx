@@ -178,7 +178,7 @@ const ItineraryView: React.FC = () => {
                             {activitiesByDay && Object.keys(activitiesByDay).length > 0 ? (
                                 Object.entries(activitiesByDay).map(([day, activities]) => (
                                     <div key={day} className="mb-8">
-                                        <h3 className="text-lg font-bold text-gray-300 bg-slate-900/80 py-2 px-4 rounded-lg sticky top-0 z-10 -mx-4 px-4 backdrop-blur-sm">Day {day}</h3>
+                                        <h3 className="text-lg font-bold text-gray-300 bg-slate-900/80 py-2 px-4 rounded-lg sticky top-0 z-10 -mx-4 backdrop-blur-sm">Day {day}</h3>
                                         <div className="mt-4">
                                             {activities.map((activity, index) => (
                                                 <ActivityCard key={`${day}-${index}`} activity={activity} isFirst={index === 0} />

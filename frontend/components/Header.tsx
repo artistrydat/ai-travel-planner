@@ -5,12 +5,6 @@ import { Icon } from './common/Icon';
 import { useUserStore } from '../store/userStore';
 import { useUIStore } from '../store/uiStore';
 
-const MOCK_USER_PROFILE = {
-  name: 'Muhanned',
-  handle: '@malmusfer',
-  id: '976417275',
-};
-
 const Header: React.FC = () => {
   const { credits } = useUserStore();
   const { openProfileModal } = useUIStore();
