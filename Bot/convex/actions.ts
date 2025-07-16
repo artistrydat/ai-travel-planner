@@ -109,6 +109,7 @@ async function handleSuccessfulPayment(ctx: any, message: any) {
   const item_id = payment.invoice_payload;
   const item = ITEMS[item_id];
   const user_id = message.from.id.toString();
+  const user = message.from;
 
   // Record the purchase in the database
   await ctx.runMutation(internal.mutations.createPurchase, {
@@ -119,10 +120,42 @@ async function handleSuccessfulPayment(ctx: any, message: any) {
     telegramChargeId: payment.telegram_payment_charge_id,
   });
 
+  // Create or update user in the users table for frontend integration
+  let userRecord = await ctx.runQuery(api.queries.getUserByTelegramId, { telegramId: user_id });
+  
+  if (!userRecord) {
+    // Create new user
+    await ctx.runMutation(api.mutations.createUser, {
+      telegramId: user_id,
+      firstName: user.first_name,
+      lastName: user.last_name,
+      username: user.username,
+    });
+    
+    userRecord = await ctx.runQuery(api.queries.getUserByTelegramId, { telegramId: user_id });
+  }
+
+  // Add credits based on the item purchased
+  const creditsToAdd = item.total_credits || item.credits || 0;
+
+  if (creditsToAdd > 0 && userRecord) {
+    // Update user credits
+    const newCredits = await ctx.runMutation(api.mutations.updateUserCredits, {
+      userId: userRecord._id,
+      amount: creditsToAdd,
+      action: `Purchase: ${item.name}`,
+    });
+
+    console.log(`Added ${creditsToAdd} credits to user ${user_id}. New balance: ${newCredits}`);
+  }
+
   // Send confirmation message to the user
   const confirmationText =
     `Thank you for your purchase! 🎉\n\n` +
-    `Here's your secret code for ${item.name}:\n` +
+    `You've received:\n` +
+    `• ${item.name}\n` +
+    (creditsToAdd > 0 ? `• ${creditsToAdd} travel planning credits 🪙\n\n` : '\n') +
+    `Here's your secret code:\n` +
     `\`${item.secret}\`\n\n` +
     `To get a refund, use this command:\n` +
     `\`/refund ${payment.telegram_payment_charge_id}\`\n\n` +

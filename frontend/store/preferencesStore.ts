@@ -1,5 +1,7 @@
 import { create } from 'zustand';
 import { PlannerPreferences } from '../types';
+import { convexService } from '../lib/convexService';
+import { useUserStore } from './userStore';
 
 const getTodayDateString = () => {
     const today = new Date();
@@ -21,6 +23,8 @@ const initialState: PlannerPreferences = {
 
 type PreferencesState = {
   preferences: PlannerPreferences;
+  isLoading: boolean;
+  error: string | null;
 };
 
 type PreferencesActions = {
@@ -28,16 +32,75 @@ type PreferencesActions = {
   setPlace: (field: 'destination' | 'departureCity', value: string) => void;
   setAllPreferences: (prefs: PlannerPreferences) => void;
   resetPreferences: () => void;
+  savePreferencesToConvex: () => Promise<void>;
+  loadPreferencesFromConvex: () => Promise<void>;
+  setLoading: (loading: boolean) => void;
+  setError: (error: string | null) => void;
 };
 
-export const usePreferencesStore = create<PreferencesState & PreferencesActions>((set) => ({
+export const usePreferencesStore = create<PreferencesState & PreferencesActions>((set, get) => ({
   preferences: initialState,
+  isLoading: false,
+  error: null,
+  
   setPreference: (key, value) => set((state) => ({
     preferences: { ...state.preferences, [key]: value }
   })),
+  
   setPlace: (field, value) => set((state) => ({
     preferences: { ...state.preferences, [field]: value }
   })),
+  
   setAllPreferences: (prefs) => set({ preferences: prefs }),
+  
   resetPreferences: () => set({ preferences: initialState }),
+  
+  setLoading: (isLoading) => set({ isLoading }),
+  
+  setError: (error) => set({ error }),
+  
+  // Save preferences to Convex
+  savePreferencesToConvex: async () => {
+    const { preferences } = get();
+    const userStore = useUserStore.getState();
+    
+    if (!userStore.user) {
+      set({ error: 'No user found' });
+      return;
+    }
+    
+    try {
+      set({ isLoading: true, error: null });
+      await convexService.setPreferences(userStore.user._id, preferences);
+    } catch (error) {
+      console.error('Error saving preferences:', error);
+      set({ error: error instanceof Error ? error.message : 'Failed to save preferences' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+  
+  // Load preferences from Convex
+  loadPreferencesFromConvex: async () => {
+    const userStore = useUserStore.getState();
+    
+    if (!userStore.user) {
+      set({ error: 'No user found' });
+      return;
+    }
+    
+    try {
+      set({ isLoading: true, error: null });
+      const userData = await convexService.getUserData(userStore.user._id);
+      
+      if (userData.preferences) {
+        set({ preferences: userData.preferences });
+      }
+    } catch (error) {
+      console.error('Error loading preferences:', error);
+      set({ error: error instanceof Error ? error.message : 'Failed to load preferences' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
 }));

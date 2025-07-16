@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
-import { SearchHistoryItem, CreditHistoryItem, UserProfile } from '../types';
+import React, { useState, useEffect } from 'react';
+import { SearchHistoryItem, CreditHistoryItem } from '../types';
 import { Icon } from './common/Icon';
 import Modal from './common/Modal';
 import { useUserStore } from '../store/userStore';
@@ -16,19 +16,66 @@ interface ProfileModalProps {
 
 type Tab = 'search' | 'credits';
 
-const MOCK_USER_PROFILE: UserProfile = {
-  name: 'Muhanned',
-  handle: '@malmusfer',
-  id: '976417275',
-};
-
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<Tab>('search');
-  const { credits, searchHistory, creditHistory, addCredits, addCreditHistoryItem } = useUserStore();
+  const { 
+    user,
+    userProfile,
+    credits, 
+    searchHistory, 
+    creditHistory, 
+    addCredits,
+    fetchUserData,
+    refreshUserProfile,
+    isLoading,
+    error 
+  } = useUserStore();
   const { setItinerary } = useItineraryStore();
   const { setAllPreferences } = usePreferencesStore();
   const { closeProfileModal, setSelectedActivityIndex } = useUIStore();
 
+  // Auto-refresh user data when modal opens
+  const handleRefresh = async () => {
+    console.log('ProfileModal: Starting auto-refresh, current credits:', credits);
+    if (user) {
+      try {
+        console.log('ProfileModal: Attempting refreshUserProfile...');
+        await refreshUserProfile();
+        
+        console.log('ProfileModal: Auto-refresh completed successfully');
+        
+      } catch (error) {
+        console.error('Failed to auto-refresh user data:', error);
+        // Fallback: try to fetch just the user data if full refresh fails
+        try {
+          console.log('ProfileModal: Trying fallback refresh...');
+          await fetchUserData();
+          console.log('ProfileModal: Fallback completed successfully');
+        } catch (fallbackError) {
+          console.error('Fallback refresh also failed:', fallbackError);
+        }
+      }
+    }
+  };
+
+  // Auto-refresh when modal opens
+  useEffect(() => {
+    let refreshTimeout: NodeJS.Timeout;
+    
+    if (isOpen && user) {
+      console.log('ProfileModal: Modal opened, scheduling refresh');
+      // Add a small delay to ensure the modal is fully rendered
+      refreshTimeout = setTimeout(() => {
+        handleRefresh();
+      }, 300);
+    }
+
+    return () => {
+      if (refreshTimeout) {
+        clearTimeout(refreshTimeout);
+      }
+    };
+  }, [isOpen, user?._id]); // Refresh when modal opens or user changes
 
   const handleBuyCredits = () => {
     // Navigate to credit store page
@@ -41,6 +88,23 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     setSelectedActivityIndex(0);
     closeProfileModal();
   };
+
+  // Show loading state only if no userProfile at all
+  if (!userProfile) {
+    return (
+      <Modal isOpen={isOpen} onClose={onClose} title="">
+        <div className="w-full max-w-md mx-auto bg-slate-800 rounded-2xl overflow-hidden shadow-2xl border border-white/10 flex items-center justify-center h-96">
+          <div className="text-white text-center">
+            <svg className="animate-spin h-8 w-8 text-indigo-400 mb-4 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+              <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+              <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <p className="text-sm text-gray-300">Loading profile...</p>
+          </div>
+        </div>
+      </Modal>
+    );
+  }
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="">
@@ -55,20 +119,31 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                     <Icon name="user" className="w-8 h-8"/>
                 </div>
                 <div>
-                    <h2 className="text-xl font-bold text-white">{MOCK_USER_PROFILE.name}</h2>
-                    <p className="text-sm text-gray-300">{MOCK_USER_PROFILE.handle} &bull; ID: {MOCK_USER_PROFILE.id}</p>
+                    <h2 className="text-xl font-bold text-white">{userProfile.name}</h2>
+                    <p className="text-sm text-gray-300">{userProfile.handle} &bull; ID: {userProfile.id}</p>
                 </div>
             </div>
             <div className="mt-6 text-center">
                 <p className="text-sm text-gray-300">Your current balance is:</p>
                 <p className="text-4xl font-bold text-white my-2 flex items-center justify-center gap-2">
                     <Icon name="coin" className="w-10 h-10 text-amber-400"/>
-                    {credits} credits
+                    {isLoading ? (
+                      <span className="animate-pulse">Loading...</span>
+                    ) : (
+                      `${credits} credits`
+                    )}
                 </p>
-                <button onClick={handleBuyCredits} className="mt-2 bg-amber-400 text-amber-900 font-bold py-2 px-5 rounded-full flex items-center justify-center gap-2 hover:bg-amber-300 transition-colors mx-auto shadow-md">
-                    <Icon name="plus" className="w-5 h-5"/>
-                    Buy Credits
-                </button>
+                <div className="flex gap-2 justify-center">
+                  <button onClick={handleBuyCredits} className="bg-amber-400 text-amber-900 font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-amber-300 transition-colors shadow-md" disabled={isLoading}>
+                      <Icon name="plus" className="w-5 h-5"/>
+                      Buy Credits
+                  </button>
+                </div>
+                {error && (
+                  <p className="text-red-400 text-sm mt-2">
+                    {error}
+                  </p>
+                )}
             </div>
         </div>
 
@@ -81,7 +156,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
         </div>
 
         {/* Tab Content */}
-        <div className="flex-grow bg-slate-800 p-4 overflow-y-auto">
+        <div className="flex-grow bg-slate-800 p-4 overflow-y-auto relative">
+          {/* Show loading overlay when refreshing */}
+          {isLoading && (
+            <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center z-10">
+              <div className="text-white text-center">
+                <svg className="animate-spin h-6 w-6 text-indigo-400 mb-2 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                <p className="text-xs text-gray-300">Refreshing...</p>
+              </div>
+            </div>
+          )}
+          {/* Show content */}
           {activeTab === 'search' && <SearchHistoryList items={searchHistory} onViewItem={handleViewHistoryItem} />}
           {activeTab === 'credits' && <CreditHistoryList items={creditHistory} />}
         </div>
@@ -102,11 +190,23 @@ const TabButton: React.FC<{ title: string; isActive: boolean; onClick: () => voi
 );
 
 // Search History Components
-const SearchHistoryList: React.FC<{ items: SearchHistoryItem[], onViewItem: (item: SearchHistoryItem) => void }> = ({ items, onViewItem }) => (
-  <div className="space-y-3">
-    {[...items].reverse().map(item => <SearchHistoryCard key={item.id} item={item} onClick={() => onViewItem(item)} />)}
-  </div>
-);
+const SearchHistoryList: React.FC<{ items: SearchHistoryItem[], onViewItem: (item: SearchHistoryItem) => void }> = ({ items, onViewItem }) => {
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <Icon name="clock" className="w-12 h-12 mx-auto mb-2 opacity-50" />
+        <p>No search history yet</p>
+        <p className="text-sm mt-1">Create your first itinerary to see it here!</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3">
+      {[...items].reverse().map(item => <SearchHistoryCard key={item.id} item={item} onClick={() => onViewItem(item)} />)}
+    </div>
+  );
+};
 
 const SearchHistoryCard: React.FC<{ item: SearchHistoryItem, onClick: () => void }> = ({ item, onClick }) => (
   <div onClick={onClick} className="bg-slate-700/50 p-4 rounded-lg cursor-pointer hover:bg-slate-700 transition-colors border border-white/10">
@@ -134,11 +234,23 @@ const PreferenceChip: React.FC<{ icon: string, text: string }> = ({ icon, text }
 );
 
 // Credit History Components
-const CreditHistoryList: React.FC<{ items: CreditHistoryItem[] }> = ({ items }) => (
-  <div className="space-y-2">
-    {[...items].reverse().map(item => <CreditHistoryCard key={item.id} item={item} />)}
-  </div>
-);
+const CreditHistoryList: React.FC<{ items: CreditHistoryItem[] }> = ({ items }) => {
+  if (items.length === 0) {
+    return (
+      <div className="text-center py-8 text-gray-400">
+        <Icon name="coin" className="w-12 h-12 mx-auto mb-2 opacity-50" />
+        <p>No credit history yet</p>
+        <p className="text-sm mt-1">Credit transactions will appear here</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2">
+      {[...items].reverse().map(item => <CreditHistoryCard key={item.id} item={item} />)}
+    </div>
+  );
+};
 
 const CreditHistoryCard: React.FC<{ item: CreditHistoryItem }> = ({ item }) => {
   const isCredit = item.amount > 0;

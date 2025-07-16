@@ -3,19 +3,28 @@
 export const ITEMS: Record<string, any> = {
   premium_plan: {
     name: '🌟 Premium Plan',
-    price: 3, // Price in the smallest units of the currency (e.g. cents for USD)
+    price: 3, // 3 Telegram Stars
+    credits: 50, // Base credits
+    bonus: 15, // Bonus credits
+    total_credits: 65, // credits + bonus
     description: 'Access to premium AI trip planning features',
     secret: 'PREMIUM2025',
   },
   basic_plan: {
     name: '⭐ Basic Plan',
-    price: 2,
+    price: 2, // 2 Telegram Stars
+    credits: 25, // Base credits  
+    bonus: 5, // Bonus credits
+    total_credits: 30, // credits + bonus
     description: 'Essential trip planning features',
     secret: 'BASIC2025',
   },
   pro_guide: {
     name: '📖 Pro Travel Guide',
-    price: 1,
+    price: 1, // 1 Telegram Star
+    credits: 10, // Base credits
+    bonus: 0, // No bonus
+    total_credits: 10, // credits + bonus
     description: 'Comprehensive travel guide with insider tips',
     secret: 'PROGUIDE2025',
   },

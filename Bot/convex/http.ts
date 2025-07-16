@@ -4,6 +4,14 @@ import { api } from './_generated/api';
 
 const http = httpRouter();
 
+// CORS headers helper
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type',
+  'Content-Type': 'application/json'
+};
+
 // Test endpoint to verify HTTP routing is working
 http.route({
   path: '/test',
@@ -46,6 +54,233 @@ http.route({
     
     // Always respond to Telegram with a 200 OK
     return new Response('OK', { status: 200 });
+  }),
+});
+
+// User-related endpoints
+
+// Get or create user by Telegram ID
+http.route({
+  path: '/user',
+  method: 'OPTIONS',
+  handler: httpAction(async (_ctx, _request) => {
+    return new Response(null, { status: 200, headers: corsHeaders });
+  }),
+});
+
+http.route({
+  path: '/user',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const body = await request.text();
+      const { telegramId, firstName, lastName, username } = JSON.parse(body);
+      
+      // Check if user exists
+      let user = await ctx.runQuery(api.queries.getUserByTelegramId, { telegramId });
+      
+      if (!user) {
+        // Create new user
+        await ctx.runMutation(api.mutations.createUser, {
+          telegramId,
+          firstName,
+          lastName,
+          username,
+        });
+        
+        user = await ctx.runQuery(api.queries.getUserByTelegramId, { telegramId });
+      }
+      
+      return new Response(JSON.stringify({ user }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    } catch (error) {
+      console.error('Error handling user request:', error);
+      return new Response(JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+  }),
+});
+
+// Get user data (credits, history, preferences)
+http.route({
+  path: '/user-data',
+  method: 'OPTIONS',
+  handler: httpAction(async (_ctx, _request) => {
+    return new Response(null, { status: 200, headers: corsHeaders });
+  }),
+});
+
+http.route({
+  path: '/user-data',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const body = await request.text();
+      const { userId } = JSON.parse(body);
+      
+      // Use Promise.allSettled to handle individual query failures gracefully
+      const [searchHistoryResult, creditHistoryResult, preferencesResult] = await Promise.allSettled([
+        ctx.runQuery(api.queries.getUserSearchHistory, { userId }),
+        ctx.runQuery(api.queries.getUserCreditHistory, { userId }),
+        ctx.runQuery(api.queries.getUserPreferences, { userId }),
+      ]);
+      
+      // Extract results or use fallback values
+      const searchHistory = searchHistoryResult.status === 'fulfilled' ? searchHistoryResult.value || [] : [];
+      const creditHistory = creditHistoryResult.status === 'fulfilled' ? creditHistoryResult.value || [] : [];
+      const preferences = preferencesResult.status === 'fulfilled' ? preferencesResult.value : null;
+      
+      // Log any failed queries for debugging
+      if (searchHistoryResult.status === 'rejected') {
+        console.error('Failed to fetch search history:', searchHistoryResult.reason);
+      }
+      if (creditHistoryResult.status === 'rejected') {
+        console.error('Failed to fetch credit history:', creditHistoryResult.reason);
+      }
+      if (preferencesResult.status === 'rejected') {
+        console.error('Failed to fetch preferences:', preferencesResult.reason);
+      }
+      
+      return new Response(JSON.stringify({
+        searchHistory,
+        creditHistory,
+        preferences,
+      }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    } catch (error) {
+      console.error('Error fetching user data:', error);
+      return new Response(JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+  }),
+});
+
+// Update user credits
+http.route({
+  path: '/update-credits',
+  method: 'OPTIONS',
+  handler: httpAction(async (_ctx, _request) => {
+    return new Response(null, { status: 200, headers: corsHeaders });
+  }),
+});
+
+http.route({
+  path: '/update-credits',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const body = await request.text();
+      const { userId, amount, action } = JSON.parse(body);
+      
+      const newCredits = await ctx.runMutation(api.mutations.updateUserCredits, {
+        userId,
+        amount,
+        action,
+      });
+      
+      return new Response(JSON.stringify({ credits: newCredits }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    } catch (error) {
+      console.error('Error updating credits:', error);
+      return new Response(JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+  }),
+});
+
+// Add search history
+http.route({
+  path: '/add-search-history',
+  method: 'OPTIONS',
+  handler: httpAction(async (_ctx, _request) => {
+    return new Response(null, { status: 200, headers: corsHeaders });
+  }),
+});
+
+http.route({
+  path: '/add-search-history',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const body = await request.text();
+      const { userId, destination, preferences, itinerary } = JSON.parse(body);
+      
+      await ctx.runMutation(api.mutations.addSearchHistory, {
+        userId,
+        destination,
+        preferences,
+        itinerary,
+      });
+      
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    } catch (error) {
+      console.error('Error adding search history:', error);
+      return new Response(JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
+  }),
+});
+
+// Set user preferences
+http.route({
+  path: '/set-preferences',
+  method: 'OPTIONS',
+  handler: httpAction(async (_ctx, _request) => {
+    return new Response(null, { status: 200, headers: corsHeaders });
+  }),
+});
+
+http.route({
+  path: '/set-preferences',
+  method: 'POST',
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const body = await request.text();
+      const { userId, ...preferences } = JSON.parse(body);
+      
+      await ctx.runMutation(api.mutations.setUserPreferences, {
+        userId,
+        ...preferences,
+      });
+      
+      return new Response(JSON.stringify({ success: true }), {
+        status: 200,
+        headers: corsHeaders
+      });
+    } catch (error) {
+      console.error('Error setting preferences:', error);
+      return new Response(JSON.stringify({ 
+        error: error instanceof Error ? error.message : 'Unknown error' 
+      }), {
+        status: 500,
+        headers: corsHeaders
+      });
+    }
   }),
 });
 

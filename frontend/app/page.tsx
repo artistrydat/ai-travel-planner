@@ -1,6 +1,6 @@
 "use client";
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Header from '../components/Header';
 import PlannerControls from '../components/PlannerControls';
 import ItineraryView from '../components/ItineraryView';
@@ -32,9 +32,23 @@ const App: React.FC = () => {
     setSelectedActivityIndex,
   } = useUIStore();
 
-  const { preferences, resetPreferences } = usePreferencesStore();
+  const { preferences, resetPreferences, savePreferencesToConvex } = usePreferencesStore();
   const { itinerary, setItinerary, resetItinerary } = useItineraryStore();
-  const { credits, deductCredits, addCreditHistoryItem, addSearchHistoryItem } = useUserStore();
+  const { 
+    user,
+    userProfile,
+    credits, 
+    deductCredits, 
+    addSearchHistoryItem, 
+    initializeUser,
+    isLoading: userLoading,
+    error: userError 
+  } = useUserStore();
+
+  // Initialize user on app load
+  useEffect(() => {
+    initializeUser();
+  }, [initializeUser]);
 
   const mutation = useMutation({
     mutationFn: async (prefs: PlannerPreferences) => {
@@ -46,23 +60,17 @@ const App: React.FC = () => {
       const activitiesWithPhotos = await fetchPlacePhotos(generatedItinerary.itinerary);
       return { ...generatedItinerary, itinerary: activitiesWithPhotos };
     },
-    onSuccess: (data: Itinerary) => {
+    onSuccess: async (data: Itinerary) => {
       setItinerary(data);
       setSelectedActivityIndex(0);
       setPlannerMode(false);
       
       const cost = parseInt(preferences.duration, 10) || 1;
-      deductCredits(cost);
+      
+      // Deduct credits via Convex
+      await deductCredits(cost, `Plan: ${data.destination}`);
 
-      const creditLog = {
-        id: Date.now(),
-        date: new Date().toLocaleString(),
-        action: `Plan: ${data.destination}`,
-        amount: -cost,
-        balance: credits - cost,
-      };
-      addCreditHistoryItem(creditLog);
-
+      // Add search history via Convex
       const searchLog = {
         id: Date.now(),
         destination: data.destination,
@@ -70,23 +78,33 @@ const App: React.FC = () => {
         preferences: preferences,
         itinerary: data,
       };
-      addSearchHistoryItem(searchLog);
+      await addSearchHistoryItem(searchLog);
+
+      // Save current preferences to Convex
+      await savePreferencesToConvex();
     },
     onError: (err: Error) => {
       setError(err.message);
     }
   });
 
-  const handleGeneratePlan = () => {
+  const handleGeneratePlan = async () => {
+    if (!user || !userProfile) {
+      setError("Please wait for user initialization or restart the app.");
+      return;
+    }
+    
     if (!preferences.destination || !preferences.interests) {
       setError("Please provide a destination and your interests.");
       return;
     }
+    
     const cost = parseInt(preferences.duration, 10);
     if(credits < cost) {
       setError(`Not enough credits. This trip costs ${cost}, but you only have ${credits}.`);
       return;
     }
+    
     setItinerary(null);
     mutation.mutate(preferences);
   };
@@ -98,6 +116,44 @@ const App: React.FC = () => {
     setPlannerMode(false);
     mutation.reset();
   };
+
+  // Show loading state while user is being initialized
+  if (userLoading) {
+    return (
+      <div className="relative h-screen w-screen bg-gray-900 overflow-hidden flex items-center justify-center">
+        <div className="text-white text-center">
+          <svg className="animate-spin h-10 w-10 text-indigo-400 mb-4 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <p className="text-lg font-semibold">Initializing your account...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state if user initialization failed
+  if (userError && !user && !userProfile) {
+    return (
+      <div className="relative h-screen w-screen bg-gray-900 overflow-hidden flex items-center justify-center">
+        <div className="text-white text-center max-w-md">
+          <div className="text-red-400 mb-4">
+            <svg className="w-16 h-16 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h2 className="text-xl font-bold mb-2">Initialization Failed</h2>
+          <p className="text-gray-300 mb-4 text-sm">{userError}</p>
+          <button 
+            onClick={initializeUser}
+            className="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="relative h-screen w-screen bg-gray-900 overflow-hidden">

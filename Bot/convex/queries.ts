@@ -59,13 +59,55 @@ export const getSalesByDay = query({
     }
 });
 
-
 export const getPurchaseByChargeId = internalQuery({
   args: { telegramChargeId: v.string() },
   handler: async (ctx, { telegramChargeId }) => {
     return await ctx.db
       .query('purchases')
       .withIndex('by_charge_id', (q) => q.eq('telegramChargeId', telegramChargeId))
+      .unique();
+  },
+});
+
+// User-related queries
+export const getUserByTelegramId = query({
+  args: { telegramId: v.string() },
+  handler: async (ctx, { telegramId }) => {
+    return await ctx.db
+      .query('users')
+      .withIndex('by_telegram_id', (q) => q.eq('telegramId', telegramId))
+      .unique();
+  },
+});
+
+export const getUserSearchHistory = query({
+  args: { userId: v.id('users') },
+  handler: async (ctx, { userId }) => {
+    return await ctx.db
+      .query('searchHistory')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .order('desc')
+      .collect();
+  },
+});
+
+export const getUserCreditHistory = query({
+  args: { userId: v.id('users') },
+  handler: async (ctx, { userId }) => {
+    return await ctx.db
+      .query('creditHistory')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .order('desc')
+      .collect();
+  },
+});
+
+export const getUserPreferences = query({
+  args: { userId: v.id('users') },
+  handler: async (ctx, { userId }) => {
+    return await ctx.db
+      .query('preferences')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
       .unique();
   },
 });
