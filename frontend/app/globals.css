@@ -1,0 +1,51 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --color-bg: #101118; /* Dark navy base */
+  --color-primary: #6366F1; /* Electric Indigo */
+  --color-secondary: #EC4899; /* Vibrant Magenta */
+  --color-accent: #f59e0b; /* Amber */
+  --color-text-base: #f9fafb; /* Off-white */
+  --color-text-muted: #9ca3af; /* Light gray */
+  
+  /* Telegram Web App CSS Variables */
+  --tg-theme-bg-color: #ffffff;
+  --tg-theme-text-color: #000000;
+  --tg-theme-hint-color: #999999;
+  --tg-theme-link-color: #3390ec;
+  --tg-theme-button-color: #3390ec;
+  --tg-theme-button-text-color: #ffffff;
+  --tg-theme-secondary-bg-color: #f1f1f1;
+  --tg-theme-header-bg-color: #ffffff;
+  --tg-theme-accent-text-color: #3390ec;
+  --tg-theme-section-bg-color: #ffffff;
+  --tg-theme-section-header-text-color: #3390ec;
+  --tg-theme-section-separator-color: #e7e7e7;
+  --tg-theme-subtitle-text-color: #999999;
+  --tg-theme-destructive-text-color: #ff3b30;
+}
+
+body {
+  background-color: var(--color-bg);
+  /* Smooth transitions for theme changes */
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+/* Helper to hide the scrollbar on the carousel */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+@keyframes fade-in-scale {
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "name": "NextJs - AI Travel Planner",
+  "description": "An AI-powered travel planner that creates detailed itineraries based on your preferences, visualized on a map interface. Generated plans can be exported for offline use.",
+  "requestFramePermissions": [],
+  "prompt": ""
+}

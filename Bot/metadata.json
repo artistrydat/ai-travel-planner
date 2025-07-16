@@ -1,0 +1,5 @@
+{
+  "name": "Telegram Bot Convex Dashboard",
+  "description": "A dashboard to monitor sales and refunds for a Telegram Stars-powered bot. This application visualizes data stored in a Convex backend, providing real-time insights into transactions.",
+  "requestFramePermissions": []
+}
