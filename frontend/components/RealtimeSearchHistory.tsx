@@ -22,15 +22,15 @@ export function RealtimeSearchHistory() {
   }
   
   return (
-    <div className="space-y-2">
-      <h3 className="text-white font-semibold">Recent Searches</h3>
+    <div className="space-y-1.5">
+      <h3 className="text-white font-semibold text-sm">Recent Searches</h3>
       {searchHistory.slice(0, 5).map((item: SearchHistoryItem) => (
-        <div key={item._id} className="bg-gray-800 p-3 rounded-lg">
-          <div className="text-white font-medium">{item.destination}</div>
-          <div className="text-gray-400 text-sm">
+        <div key={item._id} className="bg-gray-800 p-2 rounded-lg">
+          <div className="text-white font-medium text-sm">{item.destination}</div>
+          <div className="text-gray-400 text-xs">
             {new Date(item.createdAt).toLocaleDateString()}
           </div>
-          <div className="text-gray-300 text-sm">
+          <div className="text-gray-300 text-xs">
             {item.preferences.duration} days • {item.preferences.pace} pace
           </div>
         </div>

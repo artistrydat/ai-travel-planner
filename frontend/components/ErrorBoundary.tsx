@@ -54,24 +54,24 @@ class ErrorBoundary extends React.Component<ErrorBoundaryProps, ErrorBoundarySta
       }
 
       return (
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-          <div className="bg-red-900/20 border border-red-500 rounded-lg p-6 max-w-md w-full">
-            <h2 className="text-red-400 text-xl font-bold mb-4">
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-3">
+          <div className="bg-red-900/20 border border-red-500 rounded-lg p-4 max-w-sm w-full">
+            <h2 className="text-red-400 text-lg font-bold mb-3">
               🚨 Application Error
             </h2>
-            <div className="text-red-300 mb-4">
-              <p className="font-semibold">Error:</p>
-              <p className="text-sm break-words">{error?.message || 'Unknown error'}</p>
+            <div className="text-red-300 mb-3">
+              <p className="font-semibold text-sm">Error:</p>
+              <p className="text-xs break-words">{error?.message || 'Unknown error'}</p>
             </div>
-            <div className="text-red-300 mb-4">
-              <p className="font-semibold">Stack:</p>
-              <pre className="text-xs bg-black/30 p-2 rounded overflow-auto max-h-32">
+            <div className="text-red-300 mb-3">
+              <p className="font-semibold text-sm">Stack:</p>
+              <pre className="text-xs bg-black/30 p-2 rounded overflow-auto max-h-24">
                 {error?.stack || 'No stack trace available'}
               </pre>
             </div>
             <button
               onClick={this.resetError}
-              className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded transition-colors"
+              className="bg-red-600 hover:bg-red-700 text-white px-3 py-2 rounded transition-colors text-sm w-full"
             >
               Try Again
             </button>

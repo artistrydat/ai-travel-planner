@@ -117,38 +117,38 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
 
   return (
     <Modal isOpen={isOpen} onClose={closeExportModal} title="">
-        <div className="bg-slate-800 rounded-xl shadow-2xl p-6 w-full max-w-sm mx-auto relative border border-white/10 overflow-hidden">
-             <div className="absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r from-indigo-500 to-pink-500" />
-             <button onClick={closeExportModal} className="absolute top-3 right-3 p-2 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
-                <Icon name="close" className="w-5 h-5 text-gray-300" />
+        <div className="bg-slate-800 rounded-lg shadow-2xl p-4 w-full max-w-xs mx-auto relative border border-white/10 overflow-hidden">
+             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-indigo-500 to-pink-500" />
+             <button onClick={closeExportModal} className="absolute top-2 right-2 p-1.5 bg-white/10 rounded-full hover:bg-white/20 transition-colors">
+                <Icon name="close" className="w-4 h-4 text-gray-300" />
             </button>
-            <h2 className="text-2xl font-bold text-white text-center mt-4">Export Options</h2>
-            <p className="text-center text-gray-400 mt-2 mb-2">Choose your preferred format to save your itinerary for {itinerary.destination}.</p>
-            <p className="text-center text-amber-400 text-sm mb-6">Each export costs 1 credit • You have {liveCredits} credits</p>
+            <h2 className="text-lg font-bold text-white text-center mt-3">Export Options</h2>
+            <p className="text-center text-gray-400 mt-1.5 mb-1.5 text-sm">Choose format to save your itinerary for {itinerary.destination}.</p>
+            <p className="text-center text-amber-400 text-xs mb-4">Each export costs 1 credit • You have {liveCredits} credits</p>
         
-            <div className="flex flex-col gap-4">
+            <div className="flex flex-col gap-2.5">
                 <button
                     onClick={() => handleExport('txt')}
                     disabled={liveCredits < 1}
-                    className={`w-full flex items-center justify-center gap-3 text-lg font-semibold py-3 rounded-lg transition-transform transform ${
+                    className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-lg transition-transform transform ${
                       liveCredits < 1 
                         ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
                         : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105'
                     }`}
                 >
-                    <Icon name="text-file" className="w-6 h-6" />
+                    <Icon name="text-file" className="w-5 h-5" />
                     Export as Text (.txt)
                 </button>
                 <button
                     onClick={() => handleExport('ics')}
                     disabled={liveCredits < 1}
-                    className={`w-full flex items-center justify-center gap-3 text-lg font-semibold py-3 rounded-lg transition-transform transform ${
+                    className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-lg transition-transform transform ${
                       liveCredits < 1 
                         ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
                         : 'bg-pink-600 text-white hover:bg-pink-700 hover:scale-105'
                     }`}
                 >
-                    <Icon name="calendar" className="w-6 h-6" />
+                    <Icon name="calendar" className="w-5 h-5" />
                     Export to Calendar (.ics)
                 </button>
             </div>

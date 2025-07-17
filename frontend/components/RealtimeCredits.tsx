@@ -8,14 +8,14 @@ export function RealtimeCredits() {
   
   if (isLoading || !user) {
     return (
-      <div className="text-yellow-400 font-bold">
+      <div className="text-yellow-400 font-bold text-sm">
         💰 -- credits
       </div>
     );
   }
   
   return (
-    <div className="text-yellow-400 font-bold">
+    <div className="text-yellow-400 font-bold text-sm">
       💰 {user.credits} credits
     </div>
   );

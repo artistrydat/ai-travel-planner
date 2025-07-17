@@ -10,14 +10,14 @@ const LoadingState: React.FC = () => {
     >
       <div className="text-center">
         <div 
-          className="animate-spin rounded-full h-8 w-8 border-2 border-transparent mx-auto mb-4"
+          className="animate-spin rounded-full h-6 w-6 border-2 border-transparent mx-auto mb-3"
           style={{
             borderTopColor: 'var(--tg-theme-button-color, #3b82f6)',
             borderRightColor: 'var(--tg-theme-button-color, #3b82f6)',
           }}
         ></div>
         <p 
-          className="text-sm"
+          className="text-xs"
           style={{ color: 'var(--tg-theme-hint-color, #6b7280)' }}
         >
           Loading...
