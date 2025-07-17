@@ -67,6 +67,8 @@ export interface CreditHistoryItem {
   action: string;
   amount: number;
   balance: number;
+  purchaseId?: string; // For purchase items
+  telegramChargeId?: string; // For purchase items
 }
 
 export interface Purchase {

@@ -11,7 +11,7 @@ export const createPurchase = internalMutation({
     telegramChargeId: v.string(),
   },
   handler: async (ctx, args) => {
-    await ctx.db.insert('purchases', {
+    return await ctx.db.insert('purchases', {
       ...args,
       isRefunded: false,
     });
@@ -73,8 +73,10 @@ export const updateUserCredits = mutation({
     userId: v.id('users'),
     amount: v.number(),
     action: v.string(),
+    purchaseId: v.optional(v.id('purchases')),
+    telegramChargeId: v.optional(v.string()),
   },
-  handler: async (ctx, { userId, amount, action }) => {
+  handler: async (ctx, { userId, amount, action, purchaseId, telegramChargeId }) => {
     const user = await ctx.db.get(userId);
     if (!user) throw new Error('User not found');
     
@@ -92,6 +94,8 @@ export const updateUserCredits = mutation({
       amount,
       balanceAfter: newCredits,
       createdAt: Date.now(),
+      purchaseId,
+      telegramChargeId,
     });
     
     return newCredits;

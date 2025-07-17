@@ -112,7 +112,7 @@ async function handleSuccessfulPayment(ctx: any, message: any) {
   const user = message.from;
 
   // Record the purchase in the database
-  await ctx.runMutation(internal.mutations.createPurchase, {
+  const purchaseId = await ctx.runMutation(internal.mutations.createPurchase, {
     userId: user_id,
     itemId: item_id,
     itemName: item.name,
@@ -139,11 +139,13 @@ async function handleSuccessfulPayment(ctx: any, message: any) {
   const creditsToAdd = item.total_credits || item.credits || 0;
 
   if (creditsToAdd > 0 && userRecord) {
-    // Update user credits
+    // Update user credits with purchase reference
     const newCredits = await ctx.runMutation(api.mutations.updateUserCredits, {
       userId: userRecord._id,
       amount: creditsToAdd,
       action: `Purchase: ${item.name}`,
+      purchaseId: purchaseId,
+      telegramChargeId: payment.telegram_payment_charge_id,
     });
 
     console.log(`Added ${creditsToAdd} credits to user ${user_id}. New balance: ${newCredits}`);

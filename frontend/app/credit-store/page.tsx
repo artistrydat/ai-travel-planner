@@ -172,7 +172,7 @@ export default function CreditStore() {
             setIsLoading(true);
             
             // Call Convex backend to create invoice
-            const convexUrl = 'https://descriptive-starfish-159.convex.site';
+            const convexUrl = process.env.NEXT_PUBLIC_CONVEX_HTTP_URL || 'https://descriptive-starfish-159.convex.site';
             const response = await fetch(`${convexUrl}/createInvoice`, {
               method: 'POST',
               headers: {

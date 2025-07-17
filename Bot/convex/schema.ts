@@ -50,6 +50,8 @@ export default defineSchema({
     amount: v.number(),
     balanceAfter: v.number(),
     createdAt: v.number(),
+    purchaseId: v.optional(v.id('purchases')), // Link to purchase for refunds
+    telegramChargeId: v.optional(v.string()), // Store charge ID for easy refunds
   }).index('by_user', ['userId']),
 
   preferences: defineTable({

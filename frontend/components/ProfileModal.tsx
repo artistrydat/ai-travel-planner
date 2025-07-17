@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { SearchHistoryItem, CreditHistoryItem } from '../types';
 import { Icon } from './common/Icon';
 import Modal from './common/Modal';
+import RefundInstructionsModal from './RefundInstructionsModal';
 import { useUserStore } from '../store/userStore';
 import { useUIStore } from '../store/uiStore';
 import { useItineraryStore } from '../store/itineraryStore';
@@ -21,6 +22,9 @@ type Tab = 'search' | 'credits';
 
 const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const [activeTab, setActiveTab] = useState<Tab>('search');
+  const [showRefundModal, setShowRefundModal] = useState(false);
+  const [selectedRefund, setSelectedRefund] = useState<{ telegramChargeId: string; purchaseId: string } | null>(null);
+  
   const { 
     user,
     userProfile,
@@ -59,6 +63,8 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     action: item.action,
     amount: item.amount,
     balance: item.balanceAfter,
+    purchaseId: item.purchaseId,
+    telegramChargeId: item.telegramChargeId,
   }));
   
   const { setItinerary } = useItineraryStore();
@@ -75,6 +81,16 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     setAllPreferences(item.preferences);
     setSelectedActivityIndex(0);
     closeProfileModal();
+  };
+
+  const handleRefundClick = (telegramChargeId: string, purchaseId: string) => {
+    setSelectedRefund({ telegramChargeId, purchaseId });
+    setShowRefundModal(true);
+  };
+
+  const handleCloseRefundModal = () => {
+    setShowRefundModal(false);
+    setSelectedRefund(null);
   };
 
   // Show loading state only if no userProfile at all
@@ -127,11 +143,6 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                       Buy Credits
                   </button>
                 </div>
-                {error && (
-                  <p className="text-red-400 text-xs mt-1.5">
-                    {error}
-                  </p>
-                )}
             </div>
         </div>
 
@@ -159,9 +170,18 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
           )}
           {/* Show content */}
           {activeTab === 'search' && <SearchHistoryList items={liveSearchHistory} onViewItem={handleViewHistoryItem} />}
-          {activeTab === 'credits' && <CreditHistoryList items={liveCreditHistory} />}
+          {activeTab === 'credits' && <CreditHistoryList items={liveCreditHistory} onRefund={handleRefundClick} />}
         </div>
       </div>
+      
+      {/* Refund Instructions Modal */}
+      {showRefundModal && selectedRefund && (
+        <RefundInstructionsModal
+          onClose={handleCloseRefundModal}
+          telegramChargeId={selectedRefund.telegramChargeId}
+          purchaseId={selectedRefund.purchaseId}
+        />
+      )}
     </Modal>
   );
 };
@@ -191,7 +211,7 @@ const SearchHistoryList: React.FC<{ items: SearchHistoryItem[], onViewItem: (ite
 
   return (
     <div className="space-y-2">
-      {[...items].reverse().map(item => <SearchHistoryCard key={item.id} item={item} onClick={() => onViewItem(item)} />)}
+      {[...items].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map(item => <SearchHistoryCard key={item.id} item={item} onClick={() => onViewItem(item)} />)}
     </div>
   );
 };
@@ -222,7 +242,7 @@ const PreferenceChip: React.FC<{ icon: string, text: string }> = ({ icon, text }
 );
 
 // Credit History Components
-const CreditHistoryList: React.FC<{ items: CreditHistoryItem[] }> = ({ items }) => {
+const CreditHistoryList: React.FC<{ items: CreditHistoryItem[]; onRefund: (telegramChargeId: string, purchaseId: string) => void }> = ({ items, onRefund }) => {
   if (items.length === 0) {
     return (
       <div className="text-center py-6 text-gray-400">
@@ -235,13 +255,15 @@ const CreditHistoryList: React.FC<{ items: CreditHistoryItem[] }> = ({ items }) 
 
   return (
     <div className="space-y-1.5">
-      {[...items].reverse().map(item => <CreditHistoryCard key={item.id} item={item} />)}
+      {[...items].sort((a, b) => b.id - a.id).map(item => <CreditHistoryCard key={item.id} item={item} onRefund={onRefund} />)}
     </div>
   );
 };
 
-const CreditHistoryCard: React.FC<{ item: CreditHistoryItem }> = ({ item }) => {
+const CreditHistoryCard: React.FC<{ item: CreditHistoryItem; onRefund: (telegramChargeId: string, purchaseId: string) => void }> = ({ item, onRefund }) => {
   const isCredit = item.amount > 0;
+  const isPurchase = item.action.toLowerCase().includes('purchase') && item.telegramChargeId && item.purchaseId;
+  
   return (
     <div className="flex items-center p-2.5 bg-slate-700/50 rounded-lg border border-white/10">
       <div className={`w-7 h-7 rounded-full flex items-center justify-center mr-2.5 ${isCredit ? 'bg-green-500/20 text-green-400' : 'bg-red-500/20 text-red-400'}`}>
@@ -251,11 +273,21 @@ const CreditHistoryCard: React.FC<{ item: CreditHistoryItem }> = ({ item }) => {
         <p className="font-semibold text-sm text-white">{item.action}</p>
         <p className="text-xs text-gray-400">{item.date}</p>
       </div>
-      <div className="text-right">
-        <p className={`font-bold text-sm ${isCredit ? 'text-green-400' : 'text-red-400'}`}>
-          {isCredit ? `+${item.amount}` : item.amount}
-        </p>
-        <p className="text-xs text-gray-400">Bal: {item.balance}</p>
+      <div className="text-right flex items-center gap-2">
+        <div>
+          <p className={`font-bold text-sm ${isCredit ? 'text-green-400' : 'text-red-400'}`}>
+            {isCredit ? `+${item.amount}` : item.amount}
+          </p>
+          <p className="text-xs text-gray-400">Bal: {item.balance}</p>
+        </div>
+        {isPurchase && (
+          <button
+            onClick={() => onRefund(item.telegramChargeId!, item.purchaseId!)}
+            className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-2 py-1 rounded text-xs font-semibold transition-colors"
+          >
+            Refund
+          </button>
+        )}
       </div>
     </div>
   );
