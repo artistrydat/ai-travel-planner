@@ -225,7 +225,7 @@ export const createInvoiceLink = action({
     title: v.string(),
     description: v.string(),
     payload: v.string(),
-    currency: v.string(),
+    currency: v.literal('XTR'), // Must be XTR for Telegram Stars
     prices: v.array(v.object({
       label: v.string(),
       amount: v.number()

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { SearchHistoryItem, CreditHistoryItem } from '../types';
 import { Icon } from './common/Icon';
 import Modal from './common/Modal';
@@ -8,6 +8,9 @@ import { useUserStore } from '../store/userStore';
 import { useUIStore } from '../store/uiStore';
 import { useItineraryStore } from '../store/itineraryStore';
 import { usePreferencesStore } from '../store/preferencesStore';
+// Use reactive Convex queries instead of manual refresh
+import { useSearchHistory, useCreditHistory, useUserByTelegramId } from '../hooks/useConvexQueries';
+import { Doc } from '../convex/_generated/dataModel';
 
 interface ProfileModalProps {
   isOpen: boolean;
@@ -21,61 +24,46 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const { 
     user,
     userProfile,
-    credits, 
-    searchHistory, 
-    creditHistory, 
-    addCredits,
-    fetchUserData,
-    refreshUserProfile,
     isLoading,
     error 
   } = useUserStore();
+  
+  // Use reactive Convex queries for real-time data
+  const { data: liveUser, isLoading: userLoading } = useUserByTelegramId(user?.telegramId || null);
+  const { data: convexSearchHistory = [], isLoading: searchLoading } = useSearchHistory(user?._id || null);
+  const { data: convexCreditHistory = [], isLoading: creditLoading } = useCreditHistory(user?._id || null);
+  
+  // Use live credits from Convex instead of stale userStore credits
+  const liveCredits = liveUser?.credits ?? 0;
+  
+  // Convert Convex data to expected format
+  const liveSearchHistory: SearchHistoryItem[] = convexSearchHistory.map((item: Doc<"searchHistory">) => ({
+    id: item.createdAt,
+    destination: item.destination,
+    date: new Date(item.createdAt).toISOString(),
+    preferences: {
+      destination: item.preferences.destination,
+      departureCity: item.preferences.departureCity,
+      duration: item.preferences.duration,
+      startDate: item.preferences.startDate,
+      pace: item.preferences.pace as 'Relaxed' | 'Moderate' | 'Packed',
+      group: item.preferences.group as 'Solo' | 'Couple' | 'Family' | 'Friends',
+      interests: item.preferences.interests,
+    },
+    itinerary: item.itinerary,
+  }));
+
+  const liveCreditHistory: CreditHistoryItem[] = convexCreditHistory.map((item: Doc<"creditHistory">) => ({
+    id: item.createdAt,
+    date: new Date(item.createdAt).toLocaleString(),
+    action: item.action,
+    amount: item.amount,
+    balance: item.balanceAfter,
+  }));
+  
   const { setItinerary } = useItineraryStore();
   const { setAllPreferences } = usePreferencesStore();
   const { closeProfileModal, setSelectedActivityIndex } = useUIStore();
-
-  // Auto-refresh user data when modal opens
-  const handleRefresh = async () => {
-    console.log('ProfileModal: Starting auto-refresh, current credits:', credits);
-    if (user) {
-      try {
-        console.log('ProfileModal: Attempting refreshUserProfile...');
-        await refreshUserProfile();
-        
-        console.log('ProfileModal: Auto-refresh completed successfully');
-        
-      } catch (error) {
-        console.error('Failed to auto-refresh user data:', error);
-        // Fallback: try to fetch just the user data if full refresh fails
-        try {
-          console.log('ProfileModal: Trying fallback refresh...');
-          await fetchUserData();
-          console.log('ProfileModal: Fallback completed successfully');
-        } catch (fallbackError) {
-          console.error('Fallback refresh also failed:', fallbackError);
-        }
-      }
-    }
-  };
-
-  // Auto-refresh when modal opens
-  useEffect(() => {
-    let refreshTimeout: NodeJS.Timeout;
-    
-    if (isOpen && user) {
-      console.log('ProfileModal: Modal opened, scheduling refresh');
-      // Add a small delay to ensure the modal is fully rendered
-      refreshTimeout = setTimeout(() => {
-        handleRefresh();
-      }, 300);
-    }
-
-    return () => {
-      if (refreshTimeout) {
-        clearTimeout(refreshTimeout);
-      }
-    };
-  }, [isOpen, user?._id]); // Refresh when modal opens or user changes
 
   const handleBuyCredits = () => {
     // Navigate to credit store page
@@ -127,14 +115,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
                 <p className="text-sm text-gray-300">Your current balance is:</p>
                 <p className="text-4xl font-bold text-white my-2 flex items-center justify-center gap-2">
                     <Icon name="coin" className="w-10 h-10 text-amber-400"/>
-                    {isLoading ? (
+                    {isLoading || userLoading ? (
                       <span className="animate-pulse">Loading...</span>
                     ) : (
-                      `${credits} credits`
+                      `${liveCredits} credits`
                     )}
                 </p>
                 <div className="flex gap-2 justify-center">
-                  <button onClick={handleBuyCredits} className="bg-amber-400 text-amber-900 font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-amber-300 transition-colors shadow-md" disabled={isLoading}>
+                  <button onClick={handleBuyCredits} className="bg-amber-400 text-amber-900 font-bold py-2 px-4 rounded-full flex items-center justify-center gap-2 hover:bg-amber-300 transition-colors shadow-md" disabled={isLoading || userLoading}>
                       <Icon name="plus" className="w-5 h-5"/>
                       Buy Credits
                   </button>
@@ -158,20 +146,20 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
         {/* Tab Content */}
         <div className="flex-grow bg-slate-800 p-4 overflow-y-auto relative">
           {/* Show loading overlay when refreshing */}
-          {isLoading && (
+          {(searchLoading || creditLoading || userLoading) && (
             <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center z-10">
               <div className="text-white text-center">
                 <svg className="animate-spin h-6 w-6 text-indigo-400 mb-2 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                 </svg>
-                <p className="text-xs text-gray-300">Refreshing...</p>
+                <p className="text-xs text-gray-300">Loading...</p>
               </div>
             </div>
           )}
           {/* Show content */}
-          {activeTab === 'search' && <SearchHistoryList items={searchHistory} onViewItem={handleViewHistoryItem} />}
-          {activeTab === 'credits' && <CreditHistoryList items={creditHistory} />}
+          {activeTab === 'search' && <SearchHistoryList items={liveSearchHistory} onViewItem={handleViewHistoryItem} />}
+          {activeTab === 'credits' && <CreditHistoryList items={liveCreditHistory} />}
         </div>
       </div>
     </Modal>

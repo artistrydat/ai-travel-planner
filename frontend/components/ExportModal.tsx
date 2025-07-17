@@ -6,6 +6,8 @@ import { Icon } from './common/Icon';
 import { useUIStore } from '../store/uiStore';
 import { useItineraryStore } from '../store/itineraryStore';
 import { usePreferencesStore } from '../store/preferencesStore';
+import { useUserStore } from '../store/userStore';
+import { useUpdateUserCredits, useUserByTelegramId } from '../hooks/useConvexQueries';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -15,9 +17,32 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
   const { closeExportModal } = useUIStore();
   const { itinerary } = useItineraryStore();
   const { preferences } = usePreferencesStore();
+  const { user } = useUserStore();
+  const updateCreditsMutation = useUpdateUserCredits();
+  
+  // Get live credits to check if user has enough for export
+  const { data: liveUser } = useUserByTelegramId(user?.telegramId || null);
+  const liveCredits = liveUser?.credits ?? 0;
 
-  const handleExport = (format: 'txt' | 'ics') => {
-    if (!itinerary) return;
+  const handleExport = async (format: 'txt' | 'ics') => {
+    if (!itinerary || !user) return;
+
+    // Check if user has enough credits (1 credit for export)
+    if (liveCredits < 1) {
+      // TODO: Show error message about insufficient credits
+      console.error('Insufficient credits for export');
+      return;
+    }
+
+    try {
+      // Deduct 1 credit for export
+      await updateCreditsMutation.mutateAsync({
+        userId: user._id,
+        amount: -1,
+        action: `Export: ${itinerary.destination} (${format.toUpperCase()})`,
+      });
+
+      // Proceed with export
 
     const createTxtContent = () => {
         let content = `Trip Plan for: ${itinerary.destination}\n`;
@@ -70,6 +95,7 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
     };
 
     const content = format === 'txt' ? createTxtContent() : createIcsContent();
+    
     const blob = new Blob([content], { type: format === 'txt' ? 'text/plain' : 'text/calendar' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -80,7 +106,11 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     closeExportModal();
-  }
+    } catch (error) {
+      console.error('Export failed:', error);
+      // TODO: Show error message to user
+    }
+  };
 
 
   if (!itinerary) return null;
@@ -93,19 +123,30 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
                 <Icon name="close" className="w-5 h-5 text-gray-300" />
             </button>
             <h2 className="text-2xl font-bold text-white text-center mt-4">Export Options</h2>
-            <p className="text-center text-gray-400 mt-2 mb-6">Choose your preferred format to save your itinerary for {itinerary.destination}.</p>
+            <p className="text-center text-gray-400 mt-2 mb-2">Choose your preferred format to save your itinerary for {itinerary.destination}.</p>
+            <p className="text-center text-amber-400 text-sm mb-6">Each export costs 1 credit • You have {liveCredits} credits</p>
         
             <div className="flex flex-col gap-4">
                 <button
                     onClick={() => handleExport('txt')}
-                    className="w-full flex items-center justify-center gap-3 text-lg font-semibold bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition-transform transform hover:scale-105"
+                    disabled={liveCredits < 1}
+                    className={`w-full flex items-center justify-center gap-3 text-lg font-semibold py-3 rounded-lg transition-transform transform ${
+                      liveCredits < 1 
+                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                        : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105'
+                    }`}
                 >
                     <Icon name="text-file" className="w-6 h-6" />
                     Export as Text (.txt)
                 </button>
                 <button
                     onClick={() => handleExport('ics')}
-                    className="w-full flex items-center justify-center gap-3 text-lg font-semibold bg-pink-600 text-white py-3 rounded-lg hover:bg-pink-700 transition-transform transform hover:scale-105"
+                    disabled={liveCredits < 1}
+                    className={`w-full flex items-center justify-center gap-3 text-lg font-semibold py-3 rounded-lg transition-transform transform ${
+                      liveCredits < 1 
+                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                        : 'bg-pink-600 text-white hover:bg-pink-700 hover:scale-105'
+                    }`}
                 >
                     <Icon name="calendar" className="w-6 h-6" />
                     Export to Calendar (.ics)

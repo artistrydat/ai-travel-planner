@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect } from 'react';
+import React, { useEffect, useMemo, useCallback } from 'react';
 import Header from '../components/Header';
 import PlannerControls from '../components/PlannerControls';
 import ItineraryView from '../components/ItineraryView';
@@ -19,7 +19,20 @@ import { useItineraryStore } from '../store/itineraryStore';
 import { useUserStore } from '../store/userStore';
 import { Itinerary, PlannerPreferences } from '../types';
 
+// Import the new Convex hooks
+import { 
+  useUserByTelegramId, 
+  useUpdateUserCredits, 
+  useAddSearchHistory, 
+  useSetUserPreferences 
+} from '../hooks/useConvexQueries';
+import { convexService } from '../lib/convexService';
+import { usePerformanceMonitor, useSafeCallback, useDebounce } from '../hooks/usePerformance';
+
 const App: React.FC = () => {
+  // Performance monitoring
+  const renderCount = usePerformanceMonitor('App');
+  
   const { 
     isItineraryViewOpen, 
     isProfileModalOpen, 
@@ -32,23 +45,57 @@ const App: React.FC = () => {
     setSelectedActivityIndex,
   } = useUIStore();
 
-  const { preferences, resetPreferences, savePreferencesToConvex } = usePreferencesStore();
+  const { preferences, resetPreferences } = usePreferencesStore();
   const { itinerary, setItinerary, resetItinerary } = useItineraryStore();
   const { 
     user,
     userProfile,
     credits, 
-    deductCredits, 
-    addSearchHistoryItem, 
     initializeUser,
     isLoading: userLoading,
-    error: userError 
+    error: userError,
+    setUserData,
   } = useUserStore();
 
-  // Initialize user on app load
+  // Get Telegram user for reactive queries (memoized)
+  const telegramUser = useMemo(() => convexService.getTelegramUser(), []);
+  
+  // Use Convex reactive queries with less frequent updates
+  const { data: liveUser, isLoading: userQueryLoading } = useUserByTelegramId(telegramUser?.id || null);
+  const updateCreditsMutation = useUpdateUserCredits();
+  const addSearchHistoryMutation = useAddSearchHistory();
+  const setPreferencesMutation = useSetUserPreferences();
+
+  // Debounced user data update
+  const debouncedSetUserData = useDebounce(setUserData, 1000);
+
+  // Initialize user on app load (only once)
   useEffect(() => {
-    initializeUser();
-  }, [initializeUser]);
+    console.log('=== App Initialization Debug ===');
+    console.log('User loading:', userLoading);
+    console.log('User error:', userError);
+    console.log('Telegram user:', telegramUser);
+    
+    if (!user && !userLoading && telegramUser) {
+      console.log('Initializing user...');
+      initializeUser().catch((error) => {
+        console.error('Failed to initialize user:', error);
+        setError(error instanceof Error ? error.message : 'Failed to initialize user');
+      });
+    }
+  }, [telegramUser?.id, user?._id]); // Only depend on telegram user ID and current user
+
+  // Update local state when live data changes (debounced)
+  useEffect(() => {
+    if (liveUser && telegramUser && !userLoading && liveUser._id !== user?._id) {
+      console.log('Updating user data from live user (render count:', renderCount, ')');
+      debouncedSetUserData(liveUser, {
+        name: liveUser.firstName || 'User',
+        handle: `@${liveUser.username || liveUser.telegramId}`,
+        id: liveUser.telegramId,
+      });
+    }
+  }, [liveUser?._id, liveUser?.credits]); // Minimal dependencies
 
   const mutation = useMutation({
     mutationFn: async (prefs: PlannerPreferences) => {
@@ -67,28 +114,39 @@ const App: React.FC = () => {
       
       const cost = parseInt(preferences.duration, 10) || 1;
       
-      // Deduct credits via Convex
-      await deductCredits(cost, `Plan: ${data.destination}`);
+      if (user) {
+        // Use Convex mutations
+        await updateCreditsMutation.mutateAsync({
+          userId: user._id,
+          amount: -cost,
+          action: `Plan: ${data.destination}`,
+        });
 
-      // Add search history via Convex
-      const searchLog = {
-        id: Date.now(),
-        destination: data.destination,
-        date: new Date().toISOString(),
-        preferences: preferences,
-        itinerary: data,
-      };
-      await addSearchHistoryItem(searchLog);
+        const searchLog = {
+          id: Date.now(),
+          destination: data.destination,
+          date: new Date().toISOString(),
+          preferences: preferences,
+          itinerary: data,
+        };
 
-      // Save current preferences to Convex
-      await savePreferencesToConvex();
+        await addSearchHistoryMutation.mutateAsync({
+          userId: user._id,
+          searchData: searchLog,
+        });
+
+        await setPreferencesMutation.mutateAsync({
+          userId: user._id,
+          preferences: preferences,
+        });
+      }
     },
     onError: (err: Error) => {
       setError(err.message);
     }
   });
 
-  const handleGeneratePlan = async () => {
+  const handleGeneratePlan = useSafeCallback(async () => {
     if (!user || !userProfile) {
       setError("Please wait for user initialization or restart the app.");
       return;
@@ -107,15 +165,15 @@ const App: React.FC = () => {
     
     setItinerary(null);
     mutation.mutate(preferences);
-  };
+  }, [user, userProfile, preferences, credits, mutation.mutate]);
 
-  const handleReset = () => {
+  const handleReset = useSafeCallback(() => {
     resetPreferences();
     resetItinerary();
     setSelectedActivityIndex(null);
     setPlannerMode(false);
     mutation.reset();
-  };
+  }, [resetPreferences, resetItinerary, setSelectedActivityIndex, setPlannerMode, mutation.reset]);
 
   // Show loading state while user is being initialized
   if (userLoading) {

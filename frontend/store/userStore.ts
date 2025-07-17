@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { SearchHistoryItem, CreditHistoryItem, UserProfile } from '../types';
 import { convexService, ConvexUser, ConvexSearchHistory, ConvexCreditHistory } from '../lib/convexService';
+import { Id } from '../convex/_generated/dataModel';
 
 type UserState = {
   // User data
@@ -18,6 +19,7 @@ type UserActions = {
   // User initialization
   initializeUser: () => Promise<void>;
   setUser: (user: ConvexUser) => void;
+  setUserData: (user: ConvexUser, profile: UserProfile) => void;
   setLoading: (loading: boolean) => void;
   setError: (error: string | null) => void;
   
@@ -32,6 +34,7 @@ type UserActions = {
   // Data fetching
   fetchUserData: () => Promise<void>;
   refreshUserProfile: () => Promise<void>;
+  savePreferencesToConvex: () => Promise<void>;
   
   // Utility
   convertConvexSearchHistory: (convexHistory: ConvexSearchHistory[]) => SearchHistoryItem[];
@@ -106,6 +109,13 @@ export const useUserStore = create(
       },
       
       setUser: (user) => set({ user, credits: user.credits }),
+      setUserData: (user: ConvexUser, profile: UserProfile) => {
+        set({
+          user,
+          userProfile: profile,
+          credits: user.credits,
+        });
+      },
       setLoading: (isLoading) => set({ isLoading }),
       setError: (error) => set({ error }),
       
@@ -253,6 +263,18 @@ export const useUserStore = create(
       addCreditHistoryItem: (item) => set(state => ({
         creditHistory: [...state.creditHistory, item]
       })),
+
+      // Save preferences to Convex
+      savePreferencesToConvex: async () => {
+        const { user } = get();
+        if (!user) throw new Error('No user found');
+
+        // Get preferences from preferences store
+        const preferencesStore = await import('./preferencesStore');
+        const { preferences } = preferencesStore.usePreferencesStore.getState();
+        
+        await convexService.setPreferences(user._id, preferences);
+      },
       
       // Utility functions to convert Convex data to local format
       convertConvexSearchHistory: (convexHistory): SearchHistoryItem[] => {
@@ -260,7 +282,15 @@ export const useUserStore = create(
           id: item.createdAt, // Use timestamp as ID
           destination: item.destination,
           date: new Date(item.createdAt).toISOString(),
-          preferences: item.preferences,
+          preferences: {
+            destination: item.preferences.destination,
+            departureCity: item.preferences.departureCity,
+            duration: item.preferences.duration,
+            startDate: item.preferences.startDate,
+            pace: item.preferences.pace as 'Relaxed' | 'Moderate' | 'Packed',
+            group: item.preferences.group as 'Solo' | 'Couple' | 'Family' | 'Friends',
+            interests: item.preferences.interests,
+          },
           itinerary: item.itinerary,
         }));
       },

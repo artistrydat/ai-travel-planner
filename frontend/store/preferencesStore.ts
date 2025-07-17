@@ -94,7 +94,17 @@ export const usePreferencesStore = create<PreferencesState & PreferencesActions>
       const userData = await convexService.getUserData(userStore.user._id);
       
       if (userData.preferences) {
-        set({ preferences: userData.preferences });
+        // Convert Convex preferences to PlannerPreferences format
+        const convertedPreferences: PlannerPreferences = {
+          destination: userData.preferences.destination,
+          departureCity: userData.preferences.departureCity,
+          duration: userData.preferences.duration,
+          startDate: userData.preferences.startDate,
+          pace: userData.preferences.pace as 'Relaxed' | 'Moderate' | 'Packed',
+          group: userData.preferences.group as 'Solo' | 'Couple' | 'Family' | 'Friends',
+          interests: userData.preferences.interests,
+        };
+        set({ preferences: convertedPreferences });
       }
     } catch (error) {
       console.error('Error loading preferences:', error);
