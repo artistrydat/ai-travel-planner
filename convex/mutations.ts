@@ -77,6 +77,7 @@ export const addSearchHistory = mutation({
       pace: v.string(),
       group: v.string(),
       interests: v.string(),
+      budget: v.optional(v.string()),
     }),
     itinerary: v.any(),
   },
@@ -103,6 +104,7 @@ export const setUserPreferences = mutation({
     pace: v.string(),
     group: v.string(),
     interests: v.string(),
+    budget: v.optional(v.string()),
   },
   handler: async (ctx, { userId, ...preferences }) => {
     // Check if preferences already exist for this user

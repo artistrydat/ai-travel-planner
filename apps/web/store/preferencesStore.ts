@@ -17,6 +17,7 @@ const initialState: PlannerPreferences = {
   pace: 'Moderate',
   group: 'Solo',
   interests: '',
+  budget: '',
 };
 
 type PreferencesState = {

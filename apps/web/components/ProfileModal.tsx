@@ -53,6 +53,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
       pace: item.preferences.pace as 'Relaxed' | 'Moderate' | 'Packed',
       group: item.preferences.group as 'Solo' | 'Couple' | 'Family' | 'Friends',
       interests: item.preferences.interests,
+      budget: item.preferences.budget || '',
     },
     itinerary: item.itinerary,
   }));
@@ -229,6 +230,7 @@ const SearchHistoryCard: React.FC<{ item: SearchHistoryItem, onClick: () => void
         <PreferenceChip icon="calendar" text={`${item.preferences.duration} days`} />
         <PreferenceChip icon="clock" text={item.preferences.pace} />
         <PreferenceChip icon="users" text={item.preferences.group} />
+        {item.preferences.budget && <PreferenceChip icon="coin" text={item.preferences.budget} />}
         <PreferenceChip icon="star" text={item.preferences.interests.split(',')[0]} />
     </div>
   </div>

@@ -25,6 +25,7 @@ export default defineSchema({
       pace: v.string(),
       group: v.string(),
       interests: v.string(),
+      budget: v.optional(v.string()),
     }),
     itinerary: v.any(), // Store the complete itinerary object
     createdAt: v.number(),
@@ -39,6 +40,7 @@ export default defineSchema({
     pace: v.string(),
     group: v.string(),
     interests: v.string(),
+    budget: v.optional(v.string()),
     updatedAt: v.number(),
   }).index('by_user', ['userId']),
 

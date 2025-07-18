@@ -132,109 +132,185 @@ const PlannerControls: React.FC<PlannerControlsProps> = ({
         </div>
 
         {/* Search/Form Area */}
-        <div className="w-full bg-slate-800/50 backdrop-blur-lg p-1 rounded-xl shadow-2xl transition-all duration-300 border border-white/10">
-            <form onSubmit={handleSubmit} className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-1.5">
-                    <Icon name="search" className="w-4 h-4 text-gray-400 ml-2" />
+        <div className="w-full bg-gradient-to-br from-slate-800 to-slate-900 backdrop-blur-lg p-3 rounded-xl shadow-2xl transition-all duration-300 border border-white/10">
+            <form onSubmit={handleSubmit} className="flex flex-col gap-2">
+                <div className="relative">
+                    <div className="absolute left-3 top-1/2 transform -translate-y-1/2 z-10">
+                        <Icon name="search" className="w-4 h-4 text-indigo-400" />
+                    </div>
                     <input
                         ref={destinationInputRef}
                         type="text"
                         name="destination"
                         defaultValue={preferences.destination}
                         onChange={handlePreferencesChange}
-                        placeholder={isPlannerMode ? "Enter destination..." : "Explore places, history..."}
-                        className="w-full bg-transparent text-white placeholder-gray-400 text-sm focus:outline-none py-1.5"
+                        placeholder={isPlannerMode ? "Where to next? ✈️" : "Explore places, history..."}
+                        className="w-full bg-slate-700/50 border border-white/10 rounded-lg pl-10 pr-20 py-2.5 text-white placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
                         autoComplete="off"
                     />
-                     {isPlannerMode && (
+                    <div className="absolute right-2 top-1/2 transform -translate-y-1/2 flex items-center gap-1">
+                        {isPlannerMode && (
+                            <button
+                                type="button"
+                                onClick={() => setShowPreferences(!showPreferences)}
+                                aria-label="Toggle planner preferences"
+                                className={`p-1.5 rounded-lg transition-all flex-shrink-0 ${
+                                    showPreferences 
+                                        ? 'bg-indigo-500 text-white shadow-md' 
+                                        : 'text-gray-400 hover:bg-slate-600/50 hover:text-indigo-400'
+                                }`}
+                            >
+                                <Icon name="filters" className="w-4 h-4" />
+                            </button>
+                        )}
                         <button
-                            type="button"
-                            onClick={() => setShowPreferences(!showPreferences)}
-                            aria-label="Toggle planner preferences"
-                            className="text-gray-400 p-2 rounded-lg hover:bg-slate-700 transition-colors flex-shrink-0"
+                            type="submit"
+                            disabled={isLoading}
+                            className="bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white rounded-lg p-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-md"
+                            aria-label="Generate Itinerary"
                         >
-                            <Icon name="filters" className="w-4 h-4" />
+                           {isLoading ? (
+                             <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
+                           ) : (
+                             <Icon name="arrow-right" className="w-4 h-4" />
+                           )}
                         </button>
-                    )}
-                    <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="bg-gray-900 text-white rounded-lg p-2 hover:bg-gray-700 transition-colors disabled:bg-gray-500 flex-shrink-0"
-                        aria-label="Generate Itinerary"
-                    >
-                       {isLoading ? (
-                         <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
-                       ) : (
-                         <Icon name="arrow-right" className="w-4 h-4" />
-                       )}
-                    </button>
+                    </div>
                 </div>
             </form>
 
             {isPlannerMode && showPreferences && (
-            <div className="px-1.5 pb-1.5 pt-0.5 border-t border-white/10">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 mt-2">
-                    <div className="md:col-span-2">
-                      <label className="text-xs text-gray-400">Departure City</label>
-                      <input
-                          ref={departureCityInputRef}
-                          type="text"
-                          name="departureCity"
-                          defaultValue={preferences.departureCity}
-                          onChange={handlePreferencesChange}
-                          placeholder="e.g., 'New York City'"
-                          className="w-full p-1.5 text-sm bg-slate-700/50 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                          />
-                    </div>
-                    
-                    <div>
-                        <label className="text-xs text-gray-400">Duration (days)</label>
-                        <input type="number" name="duration" min="1" value={preferences.duration} onChange={handlePreferencesChange} className="w-full p-1.5 text-sm bg-slate-700/50 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                    </div>
-
-                    <div>
-                        <label className="text-xs text-gray-400">Start Date</label>
-                        <input type="date" name="startDate" value={preferences.startDate} onChange={handlePreferencesChange} className="w-full p-1.5 text-sm bg-slate-700/50 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500" />
-                    </div>
-
-                    <div>
-                        <label className="text-xs text-gray-400">Pace</label>
-                        <select name="pace" value={preferences.pace} onChange={handlePreferencesChange} className="w-full p-1.5 text-sm bg-slate-700/50 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option>Relaxed</option>
-                            <option>Moderate</option>
-                            <option>Packed</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="text-xs text-gray-400">Group</label>
-                        <select name="group" value={preferences.group} onChange={handlePreferencesChange} className="w-full p-1.5 text-sm bg-slate-700/50 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                            <option>Solo</option>
-                            <option>Couple</option>
-                            <option>Family</option>
-                            <option>Friends</option>
-                        </select>
-                    </div>
-
-                    <div className="md:col-span-2">
-                         <label className="text-xs text-gray-400">Interests / Vibe</label>
-                        <input
-                            type="text"
-                            name="interests"
-                            value={preferences.interests}
-                            onChange={handlePreferencesChange}
-                            placeholder="e.g., 'Adventure, hiking, street food'"
-                            className="w-full p-1.5 text-sm bg-slate-700/50 border border-white/10 rounded-md text-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                <div className="mt-3 p-3 bg-gradient-to-br from-slate-900/80 to-indigo-900/40 rounded-lg border border-white/10">
+                    <div className="grid grid-cols-2 gap-2">
+                        <div className="col-span-2">
+                            <label className="flex items-center gap-1.5 text-xs font-medium text-indigo-300 mb-1">
+                                <Icon name="plane" className="w-3 h-3" />
+                                Departure City
+                            </label>
+                            <input
+                                ref={departureCityInputRef}
+                                type="text"
+                                name="departureCity"
+                                defaultValue={preferences.departureCity}
+                                onChange={handlePreferencesChange}
+                                placeholder="e.g., 'New York City'"
+                                className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-indigo-400 focus:border-transparent transition-all"
                             />
+                        </div>
+                        
+                        <div>
+                            <label className="flex items-center gap-1.5 text-xs font-medium text-amber-300 mb-1">
+                                <Icon name="calendar" className="w-3 h-3" />
+                                Duration
+                            </label>
+                            <input 
+                                type="number" 
+                                name="duration" 
+                                min="1" 
+                                value={preferences.duration} 
+                                onChange={handlePreferencesChange} 
+                                className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-amber-400 focus:border-transparent transition-all" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-1.5 text-xs font-medium text-emerald-300 mb-1">
+                                <Icon name="calendar" className="w-3 h-3" />
+                                Start Date
+                            </label>
+                            <input 
+                                type="date" 
+                                name="startDate" 
+                                value={preferences.startDate} 
+                                onChange={handlePreferencesChange} 
+                                className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-emerald-400 focus:border-transparent transition-all" 
+                            />
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-1.5 text-xs font-medium text-pink-300 mb-1">
+                                <Icon name="clock" className="w-3 h-3" />
+                                Pace
+                            </label>
+                            <select 
+                                name="pace" 
+                                value={preferences.pace} 
+                                onChange={handlePreferencesChange} 
+                                className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-pink-400 focus:border-transparent transition-all"
+                            >
+                                <option>Relaxed</option>
+                                <option>Moderate</option>
+                                <option>Packed</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label className="flex items-center gap-1.5 text-xs font-medium text-purple-300 mb-1">
+                                <Icon name="users" className="w-3 h-3" />
+                                Group
+                            </label>
+                            <select 
+                                name="group" 
+                                value={preferences.group} 
+                                onChange={handlePreferencesChange} 
+                                className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-purple-400 focus:border-transparent transition-all"
+                            >
+                                <option>Solo</option>
+                                <option>Couple</option>
+                                <option>Family</option>
+                                <option>Friends</option>
+                            </select>
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="flex items-center gap-1.5 text-xs font-medium text-cyan-300 mb-1">
+                                <Icon name="star" className="w-3 h-3" />
+                                Interests / Vibe
+                            </label>
+                            <input
+                                type="text"
+                                name="interests"
+                                value={preferences.interests}
+                                onChange={handlePreferencesChange}
+                                placeholder="e.g., 'Adventure, hiking, street food'"
+                                className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-cyan-400 focus:border-transparent transition-all"
+                            />
+                        </div>
+
+                        <div className="col-span-2">
+                            <label className="flex items-center gap-1.5 text-xs font-medium text-amber-300 mb-1">
+                                <Icon name="coin" className="w-3 h-3" />
+                                Budget
+                            </label>
+                            <input
+                                type="text"
+                                name="budget"
+                                value={preferences.budget}
+                                onChange={handlePreferencesChange}
+                                placeholder="e.g., '$1500', '€2000', 'Budget-friendly'"
+                                className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white placeholder-gray-400 focus:outline-none focus:ring-1 focus:ring-amber-400 focus:border-transparent transition-all"
+                            />
+                        </div>
+                    </div>
+                    <div className="mt-3 flex justify-between items-center gap-2">
+                        <button 
+                            type="button" 
+                            onClick={handleClear} 
+                            className="flex items-center gap-1.5 text-gray-300 hover:text-white font-medium px-3 py-1.5 text-xs rounded-md hover:bg-slate-600/50 transition-all"
+                        >
+                            <Icon name="refresh" className="w-3 h-3" />
+                            Clear
+                        </button>
+                        <button 
+                            type="button" 
+                            onClick={() => setShowPreferences(false)} 
+                            className="flex items-center gap-1.5 bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white font-medium px-4 py-1.5 text-xs rounded-md transition-all shadow-md"
+                        >
+                            <Icon name="check" className="w-3 h-3" />
+                            Save
+                        </button>
                     </div>
                 </div>
-                <div className="mt-3 flex justify-end gap-2">
-                    <button type="button" onClick={handleClear} className="text-gray-300 font-semibold px-3 py-1.5 text-sm rounded-md hover:bg-white/10">Clear</button>
-                    <button type="button" onClick={() => setShowPreferences(false)} className="bg-indigo-600 text-white font-semibold px-4 py-1.5 text-sm rounded-md hover:bg-indigo-700 transition-colors">
-                       Save
-                    </button>
-                </div>
-            </div>
             )}
         </div>
     </div>

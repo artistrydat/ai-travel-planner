@@ -6,6 +6,7 @@ export interface PlannerPreferences {
   pace: 'Relaxed' | 'Moderate' | 'Packed';
   group: 'Solo' | 'Couple' | 'Family' | 'Friends';
   interests: string;
+  budget: string;
 }
 
 export interface Activity {

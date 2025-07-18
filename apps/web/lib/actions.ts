@@ -82,6 +82,7 @@ export const generateItinerary = async (preferences: PlannerPreferences): Promis
     - Pace: ${preferences.pace}
     - Group Type: ${preferences.group}
     - Interests: ${preferences.interests}
+    - Budget: ${preferences.budget || 'Not specified'}
 
     Your response must be a single JSON object that strictly adheres to the provided schema.
 
