@@ -1,5 +1,5 @@
 {
-  "name": "nextjs-ai-travel-planner",
+  "name": "@ai-travel-planner/web",
   "version": "0.1.0",
   "private": true,
   "scripts": {

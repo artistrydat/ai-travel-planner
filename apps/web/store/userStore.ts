@@ -36,9 +36,8 @@ type UserActions = {
   refreshUserProfile: () => Promise<void>;
   savePreferencesToConvex: () => Promise<void>;
   
-  // Utility
-  convertConvexSearchHistory: (convexHistory: ConvexSearchHistory[]) => SearchHistoryItem[];
-  convertConvexCreditHistory: (convexHistory: ConvexCreditHistory[]) => CreditHistoryItem[];
+  // Cleanup
+  clearUserData: () => void;
 };
 
 export const useUserStore = create(
@@ -128,10 +127,9 @@ export const useUserStore = create(
           set({ isLoading: true, error: null });
           const userData = await convexService.getUserData(user._id);
           
-          const searchHistory = get().convertConvexSearchHistory(userData.searchHistory || []);
-          const creditHistory = get().convertConvexCreditHistory(userData.creditHistory || []);
-          
-          set({ searchHistory, creditHistory, isLoading: false });
+          // Note: Conversion is now handled by TanStack Query hooks
+          // Keep minimal data for compatibility
+          set({ isLoading: false });
           console.log('UserStore: fetchUserData completed successfully');
         } catch (error) {
           console.error('Error fetching user data:', error);
@@ -170,19 +168,12 @@ export const useUserStore = create(
           
           // Fetch updated history data
           try {
-            const userData = await convexService.getUserData(freshUser._id);
-            const searchHistory = get().convertConvexSearchHistory(userData.searchHistory || []);
-            const creditHistory = get().convertConvexCreditHistory(userData.creditHistory || []);
-            console.log('UserStore: Updated credit history items:', creditHistory.length);
-            
-            set({ searchHistory, creditHistory, isLoading: false });
+            // Note: History data is now handled by TanStack Query hooks
+            // Keep for backward compatibility
+            set({ isLoading: false });
           } catch (historyError) {
-            console.warn('Failed to fetch history data, using empty arrays:', historyError);
-            set({ 
-              searchHistory: [], 
-              creditHistory: [], 
-              isLoading: false 
-            });
+            console.warn('History data handled by TanStack Query:', historyError);
+            set({ isLoading: false });
           }
           
         } catch (error) {
@@ -274,34 +265,15 @@ export const useUserStore = create(
         await convexService.setPreferences(user._id, preferences);
       },
       
-      // Utility functions to convert Convex data to local format
-      convertConvexSearchHistory: (convexHistory): SearchHistoryItem[] => {
-        return convexHistory.map(item => ({
-          id: item.createdAt, // Use timestamp as ID
-          destination: item.destination,
-          date: new Date(item.createdAt).toISOString(),
-          preferences: {
-            destination: item.preferences.destination,
-            departureCity: item.preferences.departureCity,
-            duration: item.preferences.duration,
-            startDate: item.preferences.startDate,
-            pace: item.preferences.pace as 'Relaxed' | 'Moderate' | 'Packed',
-            group: item.preferences.group as 'Solo' | 'Couple' | 'Family' | 'Friends',
-            interests: item.preferences.interests,
-          },
-          itinerary: item.itinerary,
-        }));
-      },
-      
-      convertConvexCreditHistory: (convexHistory): CreditHistoryItem[] => {
-        return convexHistory.map(item => ({
-          id: item.createdAt, // Use timestamp as ID
-          date: new Date(item.createdAt).toLocaleString(),
-          action: item.action,
-          amount: item.amount,
-          balance: item.balanceAfter,
-        }));
-      },
+      // Cleanup
+      clearUserData: () => set({
+        user: null,
+        userProfile: null,
+        credits: 0,
+        searchHistory: [],
+        creditHistory: [],
+        error: null,
+      }),
     }),
     {
       name: 'user-storage',

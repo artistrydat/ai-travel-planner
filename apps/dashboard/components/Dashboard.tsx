@@ -1,7 +1,7 @@
 
 import React from 'react';
 import { useQuery } from 'convex/react';
-import { api } from '../convex/_generated/api';
+import { api } from '../../../convex/_generated/api';
 import StatCard from './StatCard';
 import PurchaseChart from './PurchaseChart';
 import TransactionsTable from './TransactionsTable';

@@ -92,6 +92,7 @@ temp/
 
 # Convex
 .convex/
+.convex.json
 
 # Local Netlify folder
 .netlify

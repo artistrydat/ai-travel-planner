@@ -1,0 +1,36 @@
+{
+  "name": "ai-travel-planner",
+  "version": "1.0.0",
+  "description": "An AI-powered travel planner with web app and Telegram bot dashboard",
+  "private": true,
+  "workspaces": [
+    "apps/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspaces",
+    "build": "npm run build --workspaces",
+    "start": "npm run start --workspaces",
+    "lint": "npm run lint --workspaces",
+    "dev:web": "npm run dev -w @ai-travel-planner/web",
+    "dev:dashboard": "npm run dev -w @ai-travel-planner/dashboard",
+    "build:web": "npm run build -w @ai-travel-planner/web",
+    "build:dashboard": "npm run build -w @ai-travel-planner/dashboard",
+    "convex:dev": "convex dev",
+    "convex:deploy": "convex deploy"
+  },
+  "devDependencies": {
+    "convex": "^1.25.4"
+  },
+  "keywords": [
+    "ai",
+    "travel",
+    "planner",
+    "telegram",
+    "nextjs",
+    "convex",
+    "zustand",
+    "tanstack-query"
+  ],
+  "author": "Your Name",
+  "license": "MIT"
+}

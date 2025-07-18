@@ -1,12 +1,12 @@
 // A simple client for the Telegram Bot API.
 
-const BOT_TOKEN = process.env.BOT_TOKEN;
+const BOT_TOKEN = process.env.TELEGRAM_BOT_TOKEN;
 if (!BOT_TOKEN) {
   throw new Error('BOT_TOKEN environment variable not set!');
 }
 const API_URL = `https://api.telegram.org/bot${BOT_TOKEN}`;
 
-async function callTelegramApi(method: string, params: object) {
+export async function callTelegramApi(method: string, params: object) {
   const response = await fetch(`${API_URL}/${method}`, {
     method: 'POST',
     headers: {

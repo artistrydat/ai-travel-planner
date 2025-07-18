@@ -1,6 +1,6 @@
 
 import React from 'react';
-import { Doc } from '../convex/_generated/dataModel';
+import { Doc } from '../../../convex/_generated/dataModel';
 
 type Transaction = (Doc<'purchases'> & { type: 'purchase' }) | (Doc<'refunds'> & { type: 'refund' });
 

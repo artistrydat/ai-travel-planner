@@ -6,7 +6,7 @@ import App from './App';
 
 // IMPORTANT: Replace this with your Convex deployment URL.
 // You can get it from your project settings in the Convex dashboard.
-const convexUrl = 'https://descriptive-starfish-159.convex.cloud';
+const convexUrl = 'https://descriptive-starfish-159.convex.site';
 
 if (convexUrl.includes('YOUR_CONVEX_URL_HERE')) {
   throw new Error("Please replace 'YOUR_CONVEX_URL_HERE' in index.tsx with your Convex deployment URL. You can get it from your Convex dashboard.");

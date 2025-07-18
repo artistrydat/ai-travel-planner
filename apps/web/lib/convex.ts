@@ -2,7 +2,7 @@ import { ConvexReactClient } from "convex/react";
 
 // Get Convex URL with fallback and validation
 const getConvexUrl = () => {
-  const url = process.env.NEXT_PUBLIC_CONVEX_URL;
+  const url = process.env.NEXT_PUBLIC_CONVEX_URL || "https://descriptive-starfish-159.convex.site";
   
   if (!url) {
     console.error('NEXT_PUBLIC_CONVEX_URL is not defined');

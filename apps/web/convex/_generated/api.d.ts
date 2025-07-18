@@ -13,12 +13,8 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
-import type * as actions from "../actions.js";
-import type * as constants from "../constants.js";
-import type * as http from "../http.js";
 import type * as mutations from "../mutations.js";
 import type * as queries from "../queries.js";
-import type * as telegram from "../telegram.js";
 
 /**
  * A utility for referencing Convex functions in your app's API.
@@ -29,12 +25,8 @@ import type * as telegram from "../telegram.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
-  actions: typeof actions;
-  constants: typeof constants;
-  http: typeof http;
   mutations: typeof mutations;
   queries: typeof queries;
-  telegram: typeof telegram;
 }>;
 export declare const api: FilterApi<
   typeof fullApi,
