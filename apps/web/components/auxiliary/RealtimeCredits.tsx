@@ -1,6 +1,6 @@
 import React from 'react';
-import { useUserByTelegramId } from '../hooks/useConvexQueries';
-import { convexService } from '../lib/convexService';
+import { useUserByTelegramId } from '../../hooks/useConvexQueries';
+import { convexService } from '../../lib/convexService';
 
 export function RealtimeCredits() {
   const telegramUser = convexService.getTelegramUser();

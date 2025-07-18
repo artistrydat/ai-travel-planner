@@ -1,7 +1,7 @@
 import React from 'react';
-import { useSearchHistory } from '../hooks/useConvexQueries';
-import { useUserStore } from '../store/userStore';
-import { Doc } from '../convex/_generated/dataModel';
+import { useSearchHistory } from '../../hooks/useConvexQueries';
+import { useUserStore } from '../../store/userStore';
+import { Doc } from '../../convex/_generated/dataModel';
 
 type SearchHistoryItem = Doc<"searchHistory">;
 

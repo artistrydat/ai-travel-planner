@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { convexService } from '../lib/convexService';
+import { convexService } from '../../lib/convexService';
 
 interface TelegramAuthGuardProps {
   children: React.ReactNode;

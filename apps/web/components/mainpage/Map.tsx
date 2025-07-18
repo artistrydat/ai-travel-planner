@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from 'react';
-import { useItineraryStore } from '../store/itineraryStore';
-import { useUIStore } from '../store/uiStore';
+import { useItineraryStore } from '../../store/itineraryStore';
+import { useUIStore } from '../../store/uiStore';
 
 const Map: React.FC = () => {
     const { itinerary } = useItineraryStore();

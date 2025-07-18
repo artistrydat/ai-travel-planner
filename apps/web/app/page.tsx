@@ -1,15 +1,15 @@
 "use client";
 
 import React, { useEffect, useMemo, useCallback, useState } from 'react';
-import Header from '../components/Header';
-import PlannerControls from '../components/PlannerControls';
-import ItineraryView from '../components/ItineraryView';
-import ProfileModal from '../components/ProfileModal';
-import ExportModal from '../components/ExportModal';
-import Map from '../components/Map';
-import ItineraryCarousel from '../components/ItineraryCarousel';
-import TelegramAuthGuard from '../components/TelegramAuthGuard';
-import WelcomeNotification from '../components/WelcomeNotification';
+import Header from '../components/mainpage/Header';
+import PlannerControls from '../components/mainpage/PlannerControls';
+import ItineraryView from '../components/itinerary/ItineraryView';
+import ProfileModal from '../components/profile/ProfileModal';
+import ExportModal from '../components/auxiliary/ExportModal';
+import Map from '../components/mainpage/Map';
+import ItineraryCarousel from '../components/itinerary/ItineraryCarousel';
+import TelegramAuthGuard from '../components/auxiliary/TelegramAuthGuard';
+import WelcomeNotification from '../components/mainpage/WelcomeNotification';
 
 import { useMutation } from '@tanstack/react-query';
 import { generateItinerary } from '../lib/actions';

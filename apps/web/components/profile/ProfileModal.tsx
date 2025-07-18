@@ -1,17 +1,17 @@
 "use client";
 
 import React, { useState } from 'react';
-import { SearchHistoryItem, CreditHistoryItem } from '../types';
-import { Icon } from './common/Icon';
-import Modal from './common/Modal';
-import RefundInstructionsModal from './RefundInstructionsModal';
-import { useUserStore } from '../store/userStore';
-import { useUIStore } from '../store/uiStore';
-import { useItineraryStore } from '../store/itineraryStore';
-import { usePreferencesStore } from '../store/preferencesStore';
+import { SearchHistoryItem, CreditHistoryItem } from '../../types';
+import { Icon } from '../common/Icon';
+import Modal from '../common/Modal';
+import RefundInstructionsModal from '../auxiliary/RefundInstructionsModal';
+import { useUserStore } from '../../store/userStore';
+import { useUIStore } from '../../store/uiStore';
+import { useItineraryStore } from '../../store/itineraryStore';
+import { usePreferencesStore } from '../../store/preferencesStore';
 // Use reactive Convex queries instead of manual refresh
-import { useSearchHistory, useCreditHistory, useUserByTelegramId } from '../hooks/useConvexQueries';
-import { Doc } from '../convex/_generated/dataModel';
+import { useSearchHistory, useCreditHistory, useUserByTelegramId } from '../../hooks/useConvexQueries';
+import { Doc } from '../../convex/_generated/dataModel';
 
 interface ProfileModalProps {
   isOpen: boolean;

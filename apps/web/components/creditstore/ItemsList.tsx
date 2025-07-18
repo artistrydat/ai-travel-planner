@@ -1,5 +1,5 @@
 import React from 'react';
-import { Item } from '@/app/data/items';
+import { Item } from '@/components/creditstore/data/items';
 
 interface ItemsListProps {
   items: Item[];

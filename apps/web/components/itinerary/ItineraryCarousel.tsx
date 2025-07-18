@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useRef, useEffect } from 'react';
-import { Itinerary, Activity } from '../types';
-import { Icon } from './common/Icon';
-import { useItineraryStore } from '../store/itineraryStore';
-import { useUIStore } from '../store/uiStore';
+import { Itinerary, Activity } from '../../types';
+import { Icon } from '../common/Icon';
+import { useItineraryStore } from '../../store/itineraryStore';
+import { useUIStore } from '../../store/uiStore';
 
 const ActivityCard: React.FC<{ activity: Activity, isSelected: boolean, onClick: () => void }> = ({ activity, isSelected, onClick }) => {
     const fallbackImage = 'https://images.unsplash.com/photo-1542051841857-5f90071e7989?q=80&w=800&auto=format&fit=crop';

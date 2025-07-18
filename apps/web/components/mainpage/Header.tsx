@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import { Icon } from './common/Icon';
-import { useUserStore } from '../store/userStore';
-import { useUIStore } from '../store/uiStore';
-import { useUserByTelegramId } from '../hooks/useConvexQueries';
+import { Icon } from '../common/Icon';
+import { useUserStore } from '../../store/userStore';
+import { useUIStore } from '../../store/uiStore';
+import { useUserByTelegramId } from '../../hooks/useConvexQueries';
 
 const Header: React.FC = () => {
   const { user } = useUserStore();

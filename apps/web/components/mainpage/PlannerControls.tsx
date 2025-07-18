@@ -1,10 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Icon } from './common/Icon';
-import { usePreferencesStore } from '../store/preferencesStore';
-import { useUIStore } from '../store/uiStore';
-import { useItineraryCosts } from '../hooks/useOperationCosts';
+import { Icon } from '../common/Icon';
+import { usePreferencesStore } from '../../store/preferencesStore';
+import { useUIStore } from '../../store/uiStore';
+import { useItineraryCosts } from '../../hooks/useOperationCosts';
 
 interface PlannerControlsProps {
   onGeneratePlan: () => void;

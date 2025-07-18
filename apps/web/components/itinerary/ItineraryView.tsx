@@ -1,10 +1,10 @@
 "use client";
 
 import React from 'react';
-import { Activity, DailyWeather, FlightOption } from '../types';
-import { Icon } from './common/Icon';
-import { useItineraryStore } from '../store/itineraryStore';
-import { useUIStore } from '../store/uiStore';
+import { Activity, DailyWeather, FlightOption } from '../../types';
+import { Icon } from '../common/Icon';
+import { useItineraryStore } from '../../store/itineraryStore';
+import { useUIStore } from '../../store/uiStore';
 
 const getCategoryIcon = (category: Activity['category']) => {
   switch (category) {

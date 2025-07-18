@@ -1,12 +1,12 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ITEMS, Item } from '@/app/data/items';
+import { ITEMS, Item } from '@/components/creditstore/data/items';
 
 // Import components
-import LoadingState from '@/components/LoadingState';
-import ErrorState from '@/components/ErrorState';
-import ItemsList from '@/components/ItemsList';
+import LoadingState from '@/components/Error/LoadingState';
+import ErrorState from '@/components/Error/ErrorState';
+import ItemsList from '@/components/creditstore/ItemsList';
 
 // Import Telegram types (types are already declared globally in types/telegram.ts)
 
