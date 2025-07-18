@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useMemo, useCallback } from 'react';
+import React, { useEffect, useMemo, useCallback, useState } from 'react';
 import Header from '../components/Header';
 import PlannerControls from '../components/PlannerControls';
 import ItineraryView from '../components/ItineraryView';
@@ -8,6 +8,8 @@ import ProfileModal from '../components/ProfileModal';
 import ExportModal from '../components/ExportModal';
 import Map from '../components/Map';
 import ItineraryCarousel from '../components/ItineraryCarousel';
+import TelegramAuthGuard from '../components/TelegramAuthGuard';
+import WelcomeNotification from '../components/WelcomeNotification';
 
 import { useMutation } from '@tanstack/react-query';
 import { generateItinerary } from '../lib/actions';
@@ -32,6 +34,9 @@ import { usePerformanceMonitor, useSafeCallback, useDebounce } from '../hooks/us
 const App: React.FC = () => {
   // Performance monitoring
   const renderCount = usePerformanceMonitor('App');
+  
+  // Track new user status for welcome notification
+  const [isNewUser, setIsNewUser] = useState(false);
   
   const { 
     isItineraryViewOpen, 
@@ -78,12 +83,24 @@ const App: React.FC = () => {
     
     if (!user && !userLoading && telegramUser) {
       console.log('Initializing user...');
-      initializeUser().catch((error) => {
+      initializeUser().then((wasNewUser) => {
+        console.log('User initialization completed, was new user:', wasNewUser);
+        // Set the new user state for welcome notification
+        setIsNewUser(wasNewUser);
+        
+        // If this was a new user, refresh the mini app to show updated credits
+        if (wasNewUser) {
+          console.log('New user detected, refreshing Telegram app in 3 seconds...');
+          setTimeout(() => {
+            convexService.refreshTelegramApp();
+          }, 3000);
+        }
+      }).catch((error) => {
         console.error('Failed to initialize user:', error);
         setError(error instanceof Error ? error.message : 'Failed to initialize user');
       });
     }
-  }, [telegramUser?.id, user?._id]); // Only depend on telegram user ID and current user
+  }, [telegramUser?.id, user?._id, initializeUser]); // Only depend on telegram user ID and current user
 
   // Update local state when live data changes (debounced)
   useEffect(() => {
@@ -214,54 +231,62 @@ const App: React.FC = () => {
   }
 
   return (
-    <div className="relative h-screen w-screen bg-gray-900 overflow-hidden">
-      {/* Background Map */}
-      <Map />
-      
-      {/* Main UI Overlay */}
-      <div className="absolute inset-0 z-10 h-full w-full p-3 md:p-5 flex flex-col pointer-events-none">
-        <Header />
+    <TelegramAuthGuard>
+      <div className="relative h-screen w-screen bg-gray-900 overflow-hidden">
+        {/* Background Map */}
+        <Map />
         
-        <main className="flex-grow flex flex-col justify-start items-center pt-4 md:pt-6 pointer-events-auto">
-          <PlannerControls
-            isLoading={mutation.isPending}
-            onGeneratePlan={handleGeneratePlan}
-            itineraryGenerated={!!itinerary}
-            onViewItinerary={openItinerary}
-            onReset={handleReset}
-          />
-        </main>
+        {/* Welcome Notification for new users */}
+        <WelcomeNotification 
+          isNewUser={isNewUser} 
+          userName={userProfile?.name || user?.firstName || 'User'} 
+        />
+        
+        {/* Main UI Overlay */}
+        <div className="absolute inset-0 z-10 h-full w-full p-3 md:p-5 flex flex-col pointer-events-none">
+          <Header />
+          
+          <main className="flex-grow flex flex-col justify-start items-center pt-4 md:pt-6 pointer-events-auto">
+            <PlannerControls
+              isLoading={mutation.isPending}
+              onGeneratePlan={handleGeneratePlan}
+              itineraryGenerated={!!itinerary}
+              onViewItinerary={openItinerary}
+              onReset={handleReset}
+            />
+          </main>
+        </div>
+
+        {/* Itinerary Carousel */}
+        {itinerary && <ItineraryCarousel />}
+        
+        {/* Itinerary Side Panel */}
+        <ItineraryView />
+        
+        {/* Modals */}
+        <ProfileModal isOpen={isProfileModalOpen} onClose={closeProfileModal} />
+        <ExportModal isOpen={isExportModalOpen} />
+
+         {/* Loading and Error states */}
+         {mutation.isPending && (
+           <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center text-white">
+              <svg className="animate-spin h-10 w-10 text-indigo-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                  <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+              <p className="text-lg font-semibold">Crafting your perfect journey...</p>
+              <p className="text-sm text-gray-300">This might take a moment.</p>
+           </div>
+         )}
+
+         {error && (
+            <div className="absolute bottom-28 md:bottom-24 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-pink-600 to-orange-500 text-white px-6 py-3 rounded-lg shadow-2xl" role="alert">
+              <strong className="font-bold">Oh no! </strong>
+              <span className="block sm:inline">{error}</span>
+            </div>
+         )}
       </div>
-
-      {/* Itinerary Carousel */}
-      {itinerary && <ItineraryCarousel />}
-      
-      {/* Itinerary Side Panel */}
-      <ItineraryView />
-      
-      {/* Modals */}
-      <ProfileModal isOpen={isProfileModalOpen} onClose={closeProfileModal} />
-      <ExportModal isOpen={isExportModalOpen} />
-
-       {/* Loading and Error states */}
-       {mutation.isPending && (
-         <div className="absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex flex-col items-center justify-center text-white">
-            <svg className="animate-spin h-10 w-10 text-indigo-400 mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-            </svg>
-            <p className="text-lg font-semibold">Crafting your perfect journey...</p>
-            <p className="text-sm text-gray-300">This might take a moment.</p>
-         </div>
-       )}
-
-       {error && (
-          <div className="absolute bottom-28 md:bottom-24 left-1/2 -translate-x-1/2 z-50 bg-gradient-to-r from-pink-600 to-orange-500 text-white px-6 py-3 rounded-lg shadow-2xl" role="alert">
-            <strong className="font-bold">Oh no! </strong>
-            <span className="block sm:inline">{error}</span>
-          </div>
-       )}
-    </div>
+    </TelegramAuthGuard>
   );
 };
 

@@ -50,7 +50,7 @@ export const createUser = mutation({
     const now = Date.now();
     const userId = await ctx.db.insert('users', {
       ...args,
-      credits: 20, // Initial credits for new users
+      credits: 10, // Initial credits for new users (welcome bonus)
       createdAt: now,
       lastActiveAt: now,
     });
@@ -59,8 +59,8 @@ export const createUser = mutation({
     await ctx.db.insert('creditHistory', {
       userId,
       action: 'Welcome bonus',
-      amount: 20,
-      balanceAfter: 20,
+      amount: 10,
+      balanceAfter: 10,
       createdAt: now,
     });
     

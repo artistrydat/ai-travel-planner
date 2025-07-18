@@ -17,7 +17,7 @@ type UserState = {
 
 type UserActions = {
   // User initialization
-  initializeUser: () => Promise<void>;
+  initializeUser: () => Promise<boolean>; // Returns true if user was newly created
   setUser: (user: ConvexUser) => void;
   setUserData: (user: ConvexUser, profile: UserProfile) => void;
   setLoading: (loading: boolean) => void;
@@ -54,7 +54,7 @@ export const useUserStore = create(
       error: null,
       
       // Initialize user from Telegram data
-      initializeUser: async () => {
+      initializeUser: async (): Promise<boolean> => {
         try {
           set({ isLoading: true, error: null });
           
@@ -65,15 +65,10 @@ export const useUserStore = create(
             throw new Error('No Telegram user data available. Please open this app from Telegram.');
           }
           
-          // Test connection first
-          console.log('Testing Convex connection...');
-          const connectionTest = await convexService.testConnection();
-          console.log('Connection test result:', connectionTest);
-          
-          if (!connectionTest) {
-            console.error('Connection test failed - throwing error');
-            throw new Error('Unable to connect to backend services. Please check your internet connection and try again.');
-          }
+          // Check if user already exists
+          console.log('Checking if user exists in Convex...');
+          const existingUser = await convexService.getUserByTelegramId(telegramUser.id);
+          const isNewUser = !existingUser;
           
           // Get or create user in Convex
           console.log('Creating/fetching user in Convex...');
@@ -99,10 +94,13 @@ export const useUserStore = create(
           
           console.log('User initialization completed successfully');
           
+          return isNewUser;
+          
         } catch (error) {
           console.error('Error initializing user:', error);
           const errorMessage = error instanceof Error ? error.message : 'Failed to initialize user';
           set({ error: errorMessage });
+          throw error;
         } finally {
           set({ isLoading: false });
         }

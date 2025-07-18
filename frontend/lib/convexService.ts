@@ -3,9 +3,6 @@ import { convex } from './convex';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';
 
-// Use environment variable for Convex URL, fallback to the provided URL
-const CONVEX_URL = process.env.NEXT_PUBLIC_CONVEX_URL || 'https://descriptive-starfish-159.convex.site';
-
 // Interface for Telegram user data
 export interface TelegramUser {
   id: string;
@@ -56,103 +53,58 @@ export interface ConvexCreditHistory {
 }
 
 class ConvexService {
-  private baseUrl: string;
-
   constructor() {
-    this.baseUrl = CONVEX_URL;
-    console.log('ConvexService initialized with URL:', this.baseUrl);
+    console.log('ConvexService initialized');
     console.log('Environment NEXT_PUBLIC_CONVEX_URL:', process.env.NEXT_PUBLIC_CONVEX_URL);
   }
 
-  // Test connection to Convex
-  async testConnection(): Promise<boolean> {
+  // Replace HTTP methods with Convex mutations/queries
+  async getUserByTelegramId(telegramId: string): Promise<ConvexUser | null> {
     try {
-      const testUrl = `${this.baseUrl}/test`;
-      console.log('Testing connection to:', testUrl);
+      return await convex.query(api.queries.getUserByTelegramId, {
+        telegramId
+      });
+    } catch (error) {
+      console.error('Error getting user by telegram ID:', error);
+      throw error;
+    }
+  }
+
+  async getOrCreateUser(telegramUser: TelegramUser): Promise<ConvexUser> {
+    try {
+      // First check if user exists
+      console.log('Checking if user exists for telegramId:', telegramUser.id);
+      const existingUser = await this.getUserByTelegramId(telegramUser.id);
       
-      const response = await fetch(testUrl, {
-        method: 'GET',
+      if (existingUser) {
+        console.log('User exists:', existingUser);
+        return existingUser;
+      }
+      
+      // Create new user if doesn't exist
+      console.log('Creating new user for telegramId:', telegramUser.id);
+      const userId = await convex.mutation(api.mutations.createUser, {
+        telegramId: telegramUser.id,
+        firstName: telegramUser.first_name,
+        lastName: telegramUser.last_name,
+        username: telegramUser.username,
       });
       
-      console.log('Test connection response status:', response.status);
-      console.log('Test connection response ok:', response.ok);
+      console.log('User created with ID:', userId);
       
-      if (response.ok) {
-        const text = await response.text();
-        console.log('Test connection response text:', text);
+      // Fetch the created user
+      const newUser = await this.getUserByTelegramId(telegramUser.id);
+      
+      if (!newUser) {
+        throw new Error('Failed to create user');
       }
       
-      return response.ok;
+      console.log('New user created successfully:', newUser);
+      return newUser;
     } catch (error) {
-      console.error('Connection test failed:', error);
-      return false;
+      console.error('Error in getOrCreateUser:', error);
+      throw error;
     }
-  }
-
-  private async makeRequest(endpoint: string, data?: any) {
-    const url = `${this.baseUrl}${endpoint}`;
-    console.log('Making request to:', url);
-    console.log('Request data:', data);
-    
-    const response = await fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(data),
-    });
-
-    console.log('Response status:', response.status);
-    console.log('Response headers:', Object.fromEntries(response.headers.entries()));
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Error response:', errorText);
-      
-      let errorData;
-      try {
-        errorData = JSON.parse(errorText);
-      } catch {
-        errorData = { error: errorText || `HTTP error! status: ${response.status}` };
-      }
-      
-      throw new Error(errorData.error || `HTTP error! status: ${response.status}`);
-    }
-
-    const result = await response.json();
-    console.log('Response data:', result);
-    return result;
-  }
-
-  // Replace HTTP methods with Convex mutations/queries
-  async getOrCreateUser(telegramUser: TelegramUser): Promise<ConvexUser> {
-    // First check if user exists
-    const existingUser = await convex.query(api.queries.getUserByTelegramId, {
-      telegramId: telegramUser.id
-    });
-    
-    if (existingUser) {
-      return existingUser;
-    }
-    
-    // Create new user if doesn't exist
-    const userId = await convex.mutation(api.mutations.createUser, {
-      telegramId: telegramUser.id,
-      firstName: telegramUser.first_name,
-      lastName: telegramUser.last_name,
-      username: telegramUser.username,
-    });
-    
-    // Fetch the created user
-    const newUser = await convex.query(api.queries.getUserByTelegramId, {
-      telegramId: telegramUser.id
-    });
-    
-    if (!newUser) {
-      throw new Error('Failed to create user');
-    }
-    
-    return newUser;
   }
 
   // Get user data (search history, credit history, preferences)
@@ -251,6 +203,10 @@ class ConvexService {
         console.log('getTelegramUser: Telegram WebApp found, calling ready()');
         webApp.ready();
         
+        // Configure the WebApp for better user experience
+        webApp.expand(); // Expand to full height
+        webApp.disableVerticalSwipes(); // Prevent accidental closing
+        
         console.log('getTelegramUser: WebApp initDataUnsafe:', webApp.initDataUnsafe);
         
         if (webApp.initDataUnsafe?.user) {
@@ -269,22 +225,37 @@ class ConvexService {
         console.log('getTelegramUser: Telegram WebApp not found');
       }
       
-      // Fallback for development/testing - you can remove this in production
-      if (process.env.NODE_ENV === 'development') {
-        console.log('getTelegramUser: Using development fallback user');
-        return {
-          id: '976417275',
-          first_name: 'Muhanned',
-          last_name: 'Almusfer',
-          username: 'malmusfer',
-        };
-      }
-      
       console.log('getTelegramUser: No user data available');
       return null;
     } catch (error) {
       console.error('getTelegramUser: Error getting Telegram user:', error);
       return null;
+    }
+  }
+
+  // Refresh Telegram WebApp interface
+  refreshTelegramApp(): void {
+    try {
+      if (typeof window !== 'undefined') {
+        const telegram = (window as any).Telegram;
+        if (telegram?.WebApp) {
+          console.log('Triggering Telegram WebApp refresh...');
+          // Expand the app first to ensure proper display
+          telegram.WebApp.expand();
+          // Send a haptic feedback to indicate success
+          if (telegram.WebApp.HapticFeedback) {
+            telegram.WebApp.HapticFeedback.notificationOccurred('success');
+          }
+          // Show main button temporarily to indicate completion
+          telegram.WebApp.MainButton.setText('Welcome! 🎉');
+          telegram.WebApp.MainButton.show();
+          setTimeout(() => {
+            telegram.WebApp.MainButton.hide();
+          }, 2000);
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing Telegram app:', error);
     }
   }
 }
