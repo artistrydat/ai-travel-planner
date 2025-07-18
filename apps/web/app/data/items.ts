@@ -12,7 +12,7 @@ export const ITEMS: Item[] = [
   {
     id: 'pro_guide',
     name: '📖 Pro Travel Guide',
-    description: 'Comprehensive travel guide with insider tips',
+    description: 'Unlock comprehensive travel guides with insider tips, local recommendations, and detailed destination insights for your perfect trip.',
     price: 1, // 1 Telegram Star
     credits: 10, // Base credits
     bonus: 0, // No bonus
@@ -21,7 +21,7 @@ export const ITEMS: Item[] = [
   {
     id: 'basic_plan',
     name: '⭐ Basic Plan',
-    description: 'Essential trip planning features',
+    description: 'Essential trip planning features including AI-powered itineraries, restaurant recommendations, and activity suggestions for your journey.',
     price: 2, // 2 Telegram Stars
     credits: 25, // Base credits
     bonus: 5, // Bonus credits = 30 total
@@ -30,7 +30,7 @@ export const ITEMS: Item[] = [
   {
     id: 'premium_plan',
     name: '🌟 Premium Plan',
-    description: 'Access to premium AI trip planning features',
+    description: 'Access premium AI trip planning with advanced customization, real-time updates, weather integration, and personalized travel assistance.',
     price: 3, // 3 Telegram Stars
     credits: 50, // Base credits
     bonus: 15, // Bonus credits = 65 total

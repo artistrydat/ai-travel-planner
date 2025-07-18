@@ -257,45 +257,64 @@ export default function CreditStore() {
   // Main app UI with Telegram-native styling
   return (
     <div 
-      className="min-h-screen"
+      className="min-h-screen relative overflow-hidden"
       style={{
-        backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
-        color: 'var(--tg-theme-text-color, #000000)',
+        backgroundColor: 'var(--tg-theme-bg-color, #0f172a)',
+        color: 'var(--tg-theme-text-color, #ffffff)',
+        background: 'linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%)',
       }}
     >
-      <div className="max-w-md mx-auto p-0 relative">
-        {/* Minimal loading overlay - only shows during API call */}
+      {/* Animated background elements */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-10 left-5 w-20 h-20 bg-blue-500/10 rounded-full blur-2xl animate-pulse" />
+        <div className="absolute top-20 right-10 w-24 h-24 bg-purple-500/10 rounded-full blur-2xl animate-pulse delay-1000" />
+        <div className="absolute bottom-20 left-10 w-22 h-22 bg-pink-500/10 rounded-full blur-2xl animate-pulse delay-2000" />
+        <div className="absolute bottom-10 right-5 w-18 h-18 bg-cyan-500/10 rounded-full blur-2xl animate-pulse delay-500" />
+      </div>
+
+      <div className="max-w-md mx-auto p-0 relative z-10">
+        {/* Enhanced loading overlay */}
         {isLoading && (
           <div 
-            className="fixed inset-0 flex items-center justify-center z-50"
+            className="fixed inset-0 flex items-center justify-center z-50 backdrop-blur-sm"
             style={{
-              backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
+              backgroundColor: 'var(--tg-theme-bg-color, rgba(15, 23, 42, 0.95))',
             }}
           >
-            <div className="text-center">
-              <div 
-                className="animate-spin rounded-full h-8 w-8 border-2 border-transparent mx-auto mb-4"
-                style={{
-                  borderTopColor: 'var(--tg-theme-button-color, #3b82f6)',
-                  borderRightColor: 'var(--tg-theme-button-color, #3b82f6)',
-                }}
-              ></div>
+            <div className="text-center bg-white/5 backdrop-blur-lg rounded-2xl p-6 border border-white/10 shadow-xl">
+              <div className="relative mb-4">
+                <div 
+                  className="animate-spin rounded-full h-8 w-8 border-2 border-transparent mx-auto"
+                  style={{
+                    borderTopColor: 'var(--tg-theme-button-color, #3b82f6)',
+                    borderRightColor: 'var(--tg-theme-button-color, #3b82f6)',
+                    borderBottomColor: 'transparent',
+                    borderLeftColor: 'transparent',
+                  }}
+                ></div>
+                <div className="absolute inset-0 bg-gradient-to-r from-blue-400/20 to-purple-400/20 rounded-full blur-sm" />
+              </div>
               <p 
-                className="text-sm"
-                style={{ color: 'var(--tg-theme-hint-color, #6b7280)' }}
+                className="text-sm font-medium"
+                style={{ color: 'var(--tg-theme-hint-color, #94a3b8)' }}
               >
                 Creating invoice...
               </p>
+              <div className="flex items-center justify-center gap-1 mt-2">
+                <div className="w-1.5 h-1.5 bg-blue-400 rounded-full animate-bounce" style={{ animationDelay: '0ms' }} />
+                <div className="w-1.5 h-1.5 bg-purple-400 rounded-full animate-bounce" style={{ animationDelay: '150ms' }} />
+                <div className="w-1.5 h-1.5 bg-pink-400 rounded-full animate-bounce" style={{ animationDelay: '300ms' }} />
+              </div>
             </div>
           </div>
         )}
         
-        {/* Header */}
+        {/* Enhanced Header */}
         <div 
-          className="sticky top-0 z-10 p-4 border-b"
+          className="sticky top-0 z-20 p-2.5 border-b backdrop-blur-lg"
           style={{
-            backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
-            borderBottomColor: 'var(--tg-theme-section-separator-color, #e5e7eb)',
+            backgroundColor: 'var(--tg-theme-bg-color, rgba(15, 23, 42, 0.95))',
+            borderBottomColor: 'var(--tg-theme-section-separator-color, rgba(255, 255, 255, 0.1))',
           }}
         >
           <div className="flex items-center justify-between">
@@ -303,12 +322,12 @@ export default function CreditStore() {
             {!window.Telegram?.WebApp && (
               <button
                 onClick={() => window.location.href = '/'}
-                className="flex items-center text-sm transition-colors p-2 -ml-2 rounded-lg"
+                className="flex items-center text-xs transition-all duration-200 p-1 -ml-1 rounded-lg hover:bg-white/5 group"
                 style={{ 
-                  color: 'var(--tg-theme-link-color, #3b82f6)'
+                  color: 'var(--tg-theme-link-color, #60a5fa)'
                 }}
               >
-                <svg className="w-5 h-5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <svg className="w-3 h-3 mr-0.5 group-hover:-translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                 </svg>
                 Back
@@ -316,35 +335,62 @@ export default function CreditStore() {
             )}
             
             <div className="flex-1 text-center">
-              <h1 
-                className="text-xl font-semibold"
-                style={{ color: 'var(--tg-theme-text-color, #000000)' }}
-              >
-                ⭐ Credit Store
-              </h1>
+              <div className="relative">
+                <h1 
+                  className="text-base font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent"
+                >
+                  ⭐ Credit Store
+                </h1>
+              </div>
               {telegramUser && (
                 <p 
-                  className="text-sm mt-1"
-                  style={{ color: 'var(--tg-theme-hint-color, #6b7280)' }}
+                  className="text-xs mt-0.5 font-medium"
+                  style={{ color: 'var(--tg-theme-hint-color, #94a3b8)' }}
                 >
-                  Welcome, {telegramUser.first_name}!
+                  Welcome, <span className="text-blue-300">{telegramUser.first_name}</span>!
                 </p>
               )}
             </div>
             
             {/* Spacer for symmetry when back button is present */}
             {!window.Telegram?.WebApp && (
-              <div className="w-16"></div>
+              <div className="w-10"></div>
             )}
           </div>
         </div>
         
-        {/* Content */}
-        <div className="p-4 pb-20">
+        {/* Enhanced Content */}
+        <div className="p-2.5 pb-10">
+          {/* Welcome message - ultra compact */}
+          <div className="mb-3 text-center">
+            <div className="bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 backdrop-blur-sm rounded-lg p-2.5 border border-white/10 shadow-md">
+              <div className="text-lg mb-1">🚀</div>
+              <h2 className="text-sm font-semibold text-white mb-0.5">
+                Power up your travel planning!
+              </h2>
+              <p className="text-gray-300 text-xs leading-tight">
+                Get credits for AI travel features
+              </p>
+            </div>
+          </div>
+          
           <ItemsList 
             items={ITEMS}
             onPurchase={handlePurchase}
           />
+          
+          {/* Footer message - ultra compact */}
+          <div className="mt-3 text-center">
+            <div className="bg-white/5 backdrop-blur-sm rounded-lg p-1.5 border border-white/10">
+              <div className="flex items-center justify-center gap-1 mb-0.5">
+                <span className="text-green-400 text-xs">🔒</span>
+                <span className="text-xs font-medium text-green-300">Secure Payment</span>
+              </div>
+              <p className="text-xs text-gray-400 leading-tight">
+                Processed via Telegram Stars
+              </p>
+            </div>
+          </div>
         </div>
       </div>
     </div>
