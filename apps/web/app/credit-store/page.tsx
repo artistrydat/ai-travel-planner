@@ -8,60 +8,7 @@ import LoadingState from '@/components/LoadingState';
 import ErrorState from '@/components/ErrorState';
 import ItemsList from '@/components/ItemsList';
 
-// Declare Telegram WebApp types
-declare global {
-  interface Window {
-    Telegram?: {
-      WebApp: {
-        initDataUnsafe: {
-          user?: {
-            id: number;
-            first_name?: string;
-            last_name?: string;
-            username?: string;
-            language_code?: string;
-            is_premium?: boolean;
-          };
-        };
-        themeParams: {
-          bg_color?: string;
-          text_color?: string;
-          hint_color?: string;
-          link_color?: string;
-          button_color?: string;
-          button_text_color?: string;
-          secondary_bg_color?: string;
-        };
-        colorScheme: 'light' | 'dark';
-        isExpanded?: boolean;
-        platform?: string;
-        BackButton: {
-          isVisible: boolean;
-          show: () => void;
-          hide: () => void;
-          onClick: (callback: () => void) => void;
-          offClick: (callback: () => void) => void;
-        };
-        HapticFeedback: {
-          impactOccurred: (style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft') => void;
-          notificationOccurred: (type: 'error' | 'success' | 'warning') => void;
-          selectionChanged: () => void;
-        };
-        expand: () => void;
-        close: () => void;
-        ready: () => void;
-        openInvoice: (url: string, callback?: (status: string) => void) => void;
-        showPopup: (params: { 
-          title?: string; 
-          message: string; 
-          buttons?: Array<{ id?: string; type?: string; text?: string }> 
-        }, callback?: (buttonId: string) => void) => void;
-        showAlert: (message: string, callback?: () => void) => void;
-        showConfirm: (message: string, callback?: (confirmed: boolean) => void) => void;
-      };
-    };
-  }
-}
+// Import Telegram types (types are already declared globally in types/telegram.ts)
 
 export default function CreditStore() {
   const [initialized, setInitialized] = useState(false);

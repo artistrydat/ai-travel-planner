@@ -153,7 +153,7 @@ export const useTelegramSafeArea = () => {
     }
   }, []);
 
-  const updateCSSVariables = (webApp: TelegramWebApp) => {
+  const updateCSSVariables = (webApp: TelegramWebAppExtended) => {
     const root = document.documentElement;
     
     // Update safe area variables
@@ -180,7 +180,7 @@ export const useTelegramSafeArea = () => {
     root.style.setProperty(`--tg-${prefix}-right`, `${inset.right}px`);
   };
 
-  const updateViewportCSS = (webApp: TelegramWebApp) => {
+  const updateViewportCSS = (webApp: TelegramWebAppExtended) => {
     const root = document.documentElement;
     if (webApp.viewportHeight) {
       root.style.setProperty(`--tg-viewport-height`, `${webApp.viewportHeight}px`);
@@ -190,7 +190,7 @@ export const useTelegramSafeArea = () => {
     }
   };
 
-  const updateThemeCSS = (webApp: TelegramWebApp) => {
+  const updateThemeCSS = (webApp: TelegramWebAppExtended) => {
     const root = document.documentElement;
     root.style.setProperty(`--tg-color-scheme`, webApp.colorScheme || 'dark');
     

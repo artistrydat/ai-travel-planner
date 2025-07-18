@@ -96,6 +96,9 @@ export interface TelegramWebAppExtended {
     }>;
   }, callback?: (buttonId: string) => void): void;
   
+  // Payment methods
+  openInvoice(url: string, callback?: (status: string) => void): void;
+  
   // Haptic feedback
   HapticFeedback: {
     impactOccurred(style: 'light' | 'medium' | 'heavy' | 'rigid' | 'soft'): void;
