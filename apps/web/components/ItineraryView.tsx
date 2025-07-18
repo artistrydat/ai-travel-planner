@@ -39,11 +39,17 @@ const getWeatherIcon = (condition: DailyWeather['condition']) => {
 };
 
 const WeatherCard: React.FC<{ weather: DailyWeather }> = ({ weather }) => (
-  <div className="flex flex-col items-center gap-0.5 bg-slate-800/80 p-2 rounded-lg border border-white/10 text-center flex-1">
-    <p className="font-bold text-xs text-gray-300">Day {weather.day}</p>
-    <Icon name={getWeatherIcon(weather.condition)} className="w-6 h-6 text-amber-400" />
-    <p className="text-xs font-semibold text-white">{weather.condition}</p>
-    <p className="text-xs text-gray-400">{weather.highTemp}°/{weather.lowTemp}°</p>
+  <div className="flex flex-col items-center gap-1 bg-slate-800/90 p-3 rounded-xl border border-white/10 text-center min-w-[80px] backdrop-blur-sm hover:bg-slate-700/90 transition-all duration-200 shadow-lg">
+    <p className="font-bold text-xs text-gray-300 uppercase tracking-wide">Day {weather.day}</p>
+    <div className="p-2 bg-amber-400/10 rounded-full border border-amber-400/20">
+      <Icon name={getWeatherIcon(weather.condition)} className="w-6 h-6 text-amber-400" />
+    </div>
+    <p className="text-xs font-semibold text-white leading-tight">{weather.condition}</p>
+    <div className="flex items-center gap-1 text-xs">
+      <span className="font-bold text-white">{weather.highTemp}°</span>
+      <span className="text-gray-500">/</span>
+      <span className="text-gray-400">{weather.lowTemp}°</span>
+    </div>
   </div>
 );
 
@@ -156,9 +162,14 @@ const ItineraryView: React.FC = () => {
                             {/* Weather Section */}
                             {itinerary.weatherForecast && itinerary.weatherForecast.length > 0 && (
                                 <div className="mb-4">
-                                    <h3 className="text-sm font-bold text-gray-300 mb-1.5 px-1">Weather</h3>
-                                    <div className="flex gap-1.5">
-                                        {itinerary.weatherForecast.map(w => <WeatherCard key={w.day} weather={w} />)}
+                                    <h3 className="text-sm font-bold text-gray-300 mb-2 px-1 flex items-center gap-2">
+                                        <Icon name="sun" className="w-4 h-4 text-amber-400" />
+                                        Weather Forecast
+                                    </h3>
+                                    <div className="overflow-x-auto no-scrollbar">
+                                        <div className="flex gap-2 pb-2 min-w-max">
+                                            {itinerary.weatherForecast.map(w => <WeatherCard key={w.day} weather={w} />)}
+                                        </div>
                                     </div>
                                 </div>
                             )}
