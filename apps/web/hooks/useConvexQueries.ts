@@ -117,6 +117,7 @@ export const useSetUserPreferences = () => {
         pace: preferences.pace,
         group: preferences.group,
         interests: preferences.interests,
+        budget: preferences.budget,
       });
     },
     onSuccess: (_, { userId }) => {

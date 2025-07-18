@@ -183,6 +183,7 @@ class ConvexService {
       pace: preferences.pace,
       group: preferences.group,
       interests: preferences.interests,
+      budget: preferences.budget,
     });
   }
 
