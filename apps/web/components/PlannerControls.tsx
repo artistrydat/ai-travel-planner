@@ -4,6 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Icon } from './common/Icon';
 import { usePreferencesStore } from '../store/preferencesStore';
 import { useUIStore } from '../store/uiStore';
+import { useItineraryCosts } from '../hooks/useOperationCosts';
 
 interface PlannerControlsProps {
   onGeneratePlan: () => void;
@@ -27,6 +28,10 @@ const PlannerControls: React.FC<PlannerControlsProps> = ({
   const destinationInputRef = useRef<HTMLInputElement>(null);
   const departureCityInputRef = useRef<HTMLInputElement>(null);
   const [isApiLoaded, setIsApiLoaded] = useState(false);
+  
+  // Calculate cost based on current duration preference using the new hook
+  const days = parseInt(preferences.duration, 10) || 1;
+  const { cost: estimatedCost, canAfford, formattedCost, userCredits, formattedUserCredits, formattedShortfall } = useItineraryCosts(days);
 
   useEffect(() => {
     const handleApiReady = () => setIsApiLoaded(true);
@@ -165,9 +170,14 @@ const PlannerControls: React.FC<PlannerControlsProps> = ({
                         )}
                         <button
                             type="submit"
-                            disabled={isLoading}
-                            className="bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white rounded-lg p-1.5 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex-shrink-0 shadow-md"
+                            disabled={isLoading || !canAfford}
+                            className={`rounded-lg p-1.5 transition-all disabled:cursor-not-allowed flex-shrink-0 shadow-md ${
+                              !canAfford 
+                                ? 'bg-gray-600 text-gray-400' 
+                                : 'bg-gradient-to-r from-indigo-500 to-pink-500 hover:from-indigo-600 hover:to-pink-600 text-white disabled:opacity-50'
+                            }`}
                             aria-label="Generate Itinerary"
+                            title={!canAfford ? `Need ${formattedCost} (You have ${formattedUserCredits})` : `Generate itinerary for ${formattedCost}`}
                         >
                            {isLoading ? (
                              <div className="w-4 h-4 border-2 border-white/50 border-t-white rounded-full animate-spin"></div>
@@ -211,6 +221,13 @@ const PlannerControls: React.FC<PlannerControlsProps> = ({
                                 onChange={handlePreferencesChange} 
                                 className="w-full p-2 text-xs bg-slate-700/60 border border-white/20 rounded-md text-white focus:outline-none focus:ring-1 focus:ring-amber-400 focus:border-transparent transition-all" 
                             />
+                            <div className={`mt-1 text-xs flex items-center gap-1 ${canAfford ? 'text-amber-400' : 'text-red-400'}`}>
+                                <Icon name="coin" className="w-3 h-3" />
+                                Cost: {formattedCost}
+                                {!canAfford && (
+                                    <span className="text-red-300 ml-1">(Need {formattedShortfall} more)</span>
+                                )}
+                            </div>
                         </div>
 
                         <div>

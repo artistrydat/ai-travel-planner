@@ -14,6 +14,7 @@ import WelcomeNotification from '../components/WelcomeNotification';
 import { useMutation } from '@tanstack/react-query';
 import { generateItinerary } from '../lib/actions';
 import { fetchPlacePhotos } from '../lib/googleMapsService';
+import { useItineraryCosts } from '../hooks/useOperationCosts';
 
 import { useUIStore } from '../store/uiStore';
 import { usePreferencesStore } from '../store/preferencesStore';
@@ -73,6 +74,10 @@ const App: React.FC = () => {
 
   // Debounced user data update
   const debouncedSetUserData = useDebounce(setUserData, 1000);
+  
+  // Get current duration and calculate costs using the new hook
+  const days = parseInt(preferences.duration, 10) || 1;
+  const { cost: itineraryCost, canAfford, formattedCost, formattedUserCredits } = useItineraryCosts(days);
 
   // Initialize user on app load (only once)
   useEffect(() => {
@@ -129,14 +134,15 @@ const App: React.FC = () => {
       setSelectedActivityIndex(0);
       setPlannerMode(false);
       
-      const cost = parseInt(preferences.duration, 10) || 1;
+      const days = parseInt(preferences.duration, 10) || 1;
+      const cost = itineraryCost; // Use the cost from the hook
       
       if (user) {
         // Use Convex mutations
         await updateCreditsMutation.mutateAsync({
           userId: user._id,
           amount: -cost,
-          action: `Plan: ${data.destination}`,
+          action: `Plan: ${data.destination} (${days} day${days === 1 ? '' : 's'})`,
         });
 
         const searchLog = {
@@ -174,15 +180,15 @@ const App: React.FC = () => {
       return;
     }
     
-    const cost = parseInt(preferences.duration, 10);
-    if(credits < cost) {
-      setError(`Not enough credits. This trip costs ${cost}, but you only have ${credits}.`);
+    // Use the affordability check from the hook
+    if (!canAfford) {
+      setError(`Not enough credits. This trip costs ${formattedCost}, but you only have ${formattedUserCredits}.`);
       return;
     }
     
     setItinerary(null);
     mutation.mutate(preferences);
-  }, [user, userProfile, preferences, credits, mutation.mutate]);
+  }, [user, userProfile, preferences, canAfford, formattedCost, formattedUserCredits, mutation.mutate]);
 
   const handleReset = useSafeCallback(() => {
     resetPreferences();

@@ -25,12 +25,94 @@
   --tg-theme-section-separator-color: #e7e7e7;
   --tg-theme-subtitle-text-color: #999999;
   --tg-theme-destructive-text-color: #ff3b30;
+
+  /* Telegram Safe Area Variables - Default values for non-Telegram environments */
+  --tg-safe-area-inset-top: env(safe-area-inset-top, 0px);
+  --tg-safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
+  --tg-safe-area-inset-left: env(safe-area-inset-left, 0px);
+  --tg-safe-area-inset-right: env(safe-area-inset-right, 0px);
+
+  /* Telegram Content Safe Area Variables - Default values */
+  --tg-content-safe-area-inset-top: 0px;
+  --tg-content-safe-area-inset-bottom: 0px;
+  --tg-content-safe-area-inset-left: 0px;
+  --tg-content-safe-area-inset-right: 0px;
+
+  /* Telegram Viewport Variables */
+  --tg-viewport-height: 100vh;
+  --tg-viewport-stable-height: 100vh;
+  --tg-color-scheme: light;
+}
+
+/* Telegram Mini App Safe Area Support */
+html, body {
+  /* Use Telegram's viewport height when available */
+  height: var(--tg-viewport-height, 100vh);
+  min-height: var(--tg-viewport-stable-height, 100vh);
+  
+  /* Respect safe areas */
+  padding-top: var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px));
+  padding-bottom: var(--tg-safe-area-inset-bottom, env(safe-area-inset-bottom, 0px));
+  padding-left: var(--tg-safe-area-inset-left, env(safe-area-inset-left, 0px));
+  padding-right: var(--tg-safe-area-inset-right, env(safe-area-inset-right, 0px));
+  
+  /* Ensure the app fills the viewport */
+  overflow-x: hidden;
+  position: relative;
 }
 
 body {
   background-color: var(--color-bg);
   /* Smooth transitions for theme changes */
   transition: background-color 0.15s ease, color 0.15s ease;
+  margin: 0;
+  padding: 0;
+}
+
+/* Main app container respecting content safe area */
+.tg-safe-content {
+  padding-top: var(--tg-content-safe-area-inset-top, 0px);
+  padding-bottom: var(--tg-content-safe-area-inset-bottom, 0px);
+  padding-left: var(--tg-content-safe-area-inset-left, 0px);
+  padding-right: var(--tg-content-safe-area-inset-right, 0px);
+  min-height: calc(var(--tg-viewport-stable-height, 100vh) - var(--tg-content-safe-area-inset-top, 0px) - var(--tg-content-safe-area-inset-bottom, 0px));
+}
+
+/* Responsive viewport units for different screen orientations */
+@supports (height: 100dvh) {
+  :root {
+    --viewport-height-fallback: 100dvh;
+  }
+}
+
+@supports not (height: 100dvh) {
+  :root {
+    --viewport-height-fallback: 100vh;
+  }
+}
+
+/* Mobile-first responsive design utilities */
+.safe-top {
+  padding-top: max(var(--tg-safe-area-inset-top, 0px), var(--tg-content-safe-area-inset-top, 0px));
+}
+
+.safe-bottom {
+  padding-bottom: max(var(--tg-safe-area-inset-bottom, 0px), var(--tg-content-safe-area-inset-bottom, 0px));
+}
+
+.safe-left {
+  padding-left: max(var(--tg-safe-area-inset-left, 0px), var(--tg-content-safe-area-inset-left, 0px));
+}
+
+.safe-right {
+  padding-right: max(var(--tg-safe-area-inset-right, 0px), var(--tg-content-safe-area-inset-right, 0px));
+}
+
+.safe-area {
+  padding-top: max(var(--tg-safe-area-inset-top, 0px), var(--tg-content-safe-area-inset-top, 0px));
+  padding-bottom: max(var(--tg-safe-area-inset-bottom, 0px), var(--tg-content-safe-area-inset-bottom, 0px));
+  padding-left: max(var(--tg-safe-area-inset-left, 0px), var(--tg-content-safe-area-inset-left, 0px));
+  padding-right: max(var(--tg-safe-area-inset-right, 0px), var(--tg-content-safe-area-inset-right, 0px));
 }
 
 /* Helper to hide the scrollbar on the carousel */
@@ -43,9 +125,60 @@ body {
   scrollbar-width: none; /* Firefox */
 }
 
+/* Ensure smooth performance on low-end devices */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Optimize for different performance classes on Android */
+@media (max-resolution: 150dpi) {
+  /* Reduce visual effects for low-performance devices */
+  .backdrop-blur-sm {
+    backdrop-filter: none;
+    background-color: rgba(0, 0, 0, 0.8);
+  }
+  
+  .backdrop-blur-md {
+    backdrop-filter: none;
+    background-color: rgba(0, 0, 0, 0.9);
+  }
+}
+
 @keyframes fade-in-scale {
   to {
     opacity: 1;
     transform: scale(1);
   }
+}
+
+/* Fullscreen mode support */
+.tg-fullscreen {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 9999;
+  background: var(--color-bg);
+}
+
+/* Ensure text remains accessible in different themes */
+.tg-text-primary {
+  color: var(--tg-theme-text-color, var(--color-text-base));
+}
+
+.tg-text-secondary {
+  color: var(--tg-theme-hint-color, var(--color-text-muted));
+}
+
+.tg-bg-primary {
+  background-color: var(--tg-theme-bg-color, var(--color-bg));
+}
+
+.tg-bg-secondary {
+  background-color: var(--tg-theme-secondary-bg-color, #374151);
 }

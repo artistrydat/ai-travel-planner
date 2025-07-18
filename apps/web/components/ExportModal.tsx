@@ -7,7 +7,8 @@ import { useUIStore } from '../store/uiStore';
 import { useItineraryStore } from '../store/itineraryStore';
 import { usePreferencesStore } from '../store/preferencesStore';
 import { useUserStore } from '../store/userStore';
-import { useUpdateUserCredits, useUserByTelegramId } from '../hooks/useConvexQueries';
+import { useUpdateUserCredits } from '../hooks/useConvexQueries';
+import { useExportCosts, useOperationCosts } from '../hooks/useOperationCosts';
 
 interface ExportModalProps {
   isOpen: boolean;
@@ -20,25 +21,29 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
   const { user } = useUserStore();
   const updateCreditsMutation = useUpdateUserCredits();
   
-  // Get live credits to check if user has enough for export
-  const { data: liveUser } = useUserByTelegramId(user?.telegramId || null);
-  const liveCredits = liveUser?.credits ?? 0;
+  // Use the new export costs hook for reactive updates
+  const { options: exportOptions, userCredits, formattedUserCredits } = useExportCosts();
+  const { formatCost } = useOperationCosts();
 
-  const handleExport = async (format: 'txt' | 'ics') => {
+  const handleExport = async (format: 'txt' | 'pdf' | 'ics') => {
     if (!itinerary || !user) return;
 
-    // Check if user has enough credits (1 credit for export)
-    if (liveCredits < 1) {
+    // Find the option for this format to get cost and check affordability
+    const option = exportOptions?.find(opt => opt.type === format);
+    if (!option) return;
+
+    // Check if user has enough credits
+    if (!option.canAfford) {
       // TODO: Show error message about insufficient credits
       console.error('Insufficient credits for export');
       return;
     }
 
     try {
-      // Deduct 1 credit for export
+      // Deduct credits for export
       await updateCreditsMutation.mutateAsync({
         userId: user._id,
-        amount: -1,
+        amount: -option.cost,
         action: `Export: ${itinerary.destination} (${format.toUpperCase()})`,
       });
 
@@ -94,9 +99,33 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
         return content.join('\r\n');
     };
 
-    const content = format === 'txt' ? createTxtContent() : createIcsContent();
+    const createPdfContent = () => {
+      // This would require a PDF generation library like jsPDF or puppeteer
+      // For now, return the same as text content
+      return createTxtContent();
+    };
+
+    let content: string;
+    let mimeType: string;
     
-    const blob = new Blob([content], { type: format === 'txt' ? 'text/plain' : 'text/calendar' });
+    switch (format) {
+      case 'txt':
+        content = createTxtContent();
+        mimeType = 'text/plain';
+        break;
+      case 'ics':
+        content = createIcsContent();
+        mimeType = 'text/calendar';
+        break;
+      case 'pdf':
+        content = createPdfContent();
+        mimeType = 'text/plain'; // Would be 'application/pdf' for actual PDF
+        break;
+      default:
+        throw new Error(`Unsupported format: ${format}`);
+    }
+    
+    const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
@@ -124,33 +153,35 @@ const ExportModal: React.FC<ExportModalProps> = ({ isOpen }) => {
             </button>
             <h2 className="text-lg font-bold text-white text-center mt-3">Export Options</h2>
             <p className="text-center text-gray-400 mt-1.5 mb-1.5 text-sm">Choose format to save your itinerary for {itinerary.destination}.</p>
-            <p className="text-center text-amber-400 text-xs mb-4">Each export costs 1 credit • You have {liveCredits} credits</p>
+            <p className="text-center text-amber-400 text-xs mb-4">You have {formattedUserCredits}</p>
         
             <div className="flex flex-col gap-2.5">
-                <button
-                    onClick={() => handleExport('txt')}
-                    disabled={liveCredits < 1}
-                    className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-lg transition-transform transform ${
-                      liveCredits < 1 
-                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
-                        : 'bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105'
-                    }`}
-                >
-                    <Icon name="text-file" className="w-5 h-5" />
-                    Export as Text (.txt)
-                </button>
-                <button
-                    onClick={() => handleExport('ics')}
-                    disabled={liveCredits < 1}
-                    className={`w-full flex items-center justify-center gap-2 text-sm font-semibold py-2.5 rounded-lg transition-transform transform ${
-                      liveCredits < 1 
-                        ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
-                        : 'bg-pink-600 text-white hover:bg-pink-700 hover:scale-105'
-                    }`}
-                >
-                    <Icon name="calendar" className="w-5 h-5" />
-                    Export to Calendar (.ics)
-                </button>
+                {exportOptions?.map((option) => {
+                  return (
+                    <button
+                        key={option.type}
+                        onClick={() => handleExport(option.type)}
+                        disabled={!option.canAfford}
+                        className={`w-full flex items-center justify-between gap-2 text-sm font-semibold py-2.5 px-3 rounded-lg transition-transform transform ${
+                          !option.canAfford 
+                            ? 'bg-gray-600 text-gray-400 cursor-not-allowed' 
+                            : option.type === 'txt' 
+                              ? 'bg-indigo-600 text-white hover:bg-indigo-700 hover:scale-105'
+                              : option.type === 'pdf'
+                                ? 'bg-green-600 text-white hover:bg-green-700 hover:scale-105'
+                                : 'bg-pink-600 text-white hover:bg-pink-700 hover:scale-105'
+                        }`}
+                    >
+                        <div className="flex items-center gap-2">
+                          <Icon name={option.icon} className="w-5 h-5" />
+                          {option.name} ({option.description.split(' ')[option.description.split(' ').length - 1]})
+                        </div>
+                        <span className="text-xs opacity-75">
+                          {formatCost(option.cost)}
+                        </span>
+                    </button>
+                  );
+                })}
             </div>
         </div>
     </Modal>
