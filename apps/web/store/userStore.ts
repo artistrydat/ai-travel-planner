@@ -3,6 +3,7 @@ import { persist, createJSONStorage } from 'zustand/middleware';
 import { SearchHistoryItem, CreditHistoryItem, UserProfile } from '../types';
 import { convexService, ConvexUser, ConvexSearchHistory, ConvexCreditHistory } from '../lib/convexService';
 import { Id } from '../convex/_generated/dataModel';
+import { useTelegramAuthStore } from './telegramAuthStore';
 
 type UserState = {
   // User data
@@ -57,21 +58,30 @@ export const useUserStore = create(
         try {
           set({ isLoading: true, error: null });
           
-          const telegramUser = convexService.getTelegramUser();
+          // Get Telegram user from the new auth store
+          const { telegramUser } = useTelegramAuthStore.getState();
           console.log('Telegram user data:', telegramUser);
           
           if (!telegramUser) {
             throw new Error('No Telegram user data available. Please open this app from Telegram.');
           }
           
+          // Convert to the format expected by convexService
+          const telegramUserForConvex = {
+            id: telegramUser.id.toString(),
+            first_name: telegramUser.first_name,
+            last_name: telegramUser.last_name,
+            username: telegramUser.username,
+          };
+          
           // Check if user already exists
           console.log('Checking if user exists in Convex...');
-          const existingUser = await convexService.getUserByTelegramId(telegramUser.id);
+          const existingUser = await convexService.getUserByTelegramId(telegramUserForConvex.id);
           const isNewUser = !existingUser;
           
           // Get or create user in Convex
           console.log('Creating/fetching user in Convex...');
-          const convexUser = await convexService.getOrCreateUser(telegramUser);
+          const convexUser = await convexService.getOrCreateUser(telegramUserForConvex);
           console.log('Convex user:', convexUser);
           
           // Set user profile
@@ -146,7 +156,7 @@ export const useUserStore = create(
 
       // Refresh complete user profile including current credits
       refreshUserProfile: async () => {
-        const telegramUser = convexService.getTelegramUser();
+        const { telegramUser } = useTelegramAuthStore.getState();
         if (!telegramUser) {
           throw new Error('No Telegram user data available.');
         }
@@ -156,7 +166,7 @@ export const useUserStore = create(
           set({ isLoading: true, error: null });
           
           // Get fresh user profile with current credits
-          const freshUser = await convexService.getUserProfile(telegramUser.id);
+          const freshUser = await convexService.getUserProfile(telegramUser.id.toString());
           console.log('UserStore: Fresh user data from backend:', freshUser);
           
           // Update user and credits

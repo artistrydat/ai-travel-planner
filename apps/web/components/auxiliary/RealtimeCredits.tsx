@@ -1,10 +1,10 @@
 import React from 'react';
 import { useUserByTelegramId } from '../../hooks/useConvexQueries';
-import { convexService } from '../../lib/convexService';
+import { useTelegramAuthStore } from '../../store/telegramAuthStore';
 
 export function RealtimeCredits() {
-  const telegramUser = convexService.getTelegramUser();
-  const { data: user, isLoading } = useUserByTelegramId(telegramUser?.id || null);
+  const { telegramUser } = useTelegramAuthStore();
+  const { data: user, isLoading } = useUserByTelegramId(telegramUser?.id?.toString() || null);
   
   if (isLoading || !user) {
     return (

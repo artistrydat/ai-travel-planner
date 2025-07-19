@@ -102,6 +102,37 @@ export const getSalesByDay = query({
   }
 });
 
+// Public queries for landing page
+export const getRecentPopularSearches = query({
+  handler: async (ctx) => {
+    const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+    
+    const recentSearches = await ctx.db
+      .query('searchHistory')
+      .filter(q => q.gte(q.field('_creationTime'), sevenDaysAgo))
+      .collect();
+    
+    // Group by destination and count frequency
+    const destinationCounts = new Map<string, number>();
+    
+    for (const search of recentSearches) {
+      const destination = search.destination;
+      destinationCounts.set(destination, (destinationCounts.get(destination) || 0) + 1);
+    }
+    
+    // Convert to array and sort by popularity
+    const popularDestinations = Array.from(destinationCounts.entries())
+      .map(([destination, count]) => ({ destination, count }))
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 12); // Top 12 destinations
+    
+    return popularDestinations.map(item => ({
+      destination: item.destination,
+      createdAt: Date.now() // Using current time for consistency
+    }));
+  }
+});
+
 // Internal queries (for server-side operations)
 export const getPurchaseByChargeId = internalQuery({
   args: { telegramChargeId: v.string() },

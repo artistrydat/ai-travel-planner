@@ -8,13 +8,15 @@ import ProfileModal from '../components/profile/ProfileModal';
 import ExportModal from '../components/auxiliary/ExportModal';
 import Map from '../components/mainpage/Map';
 import ItineraryCarousel from '../components/itinerary/ItineraryCarousel';
-import TelegramAuthGuard from '../components/auxiliary/TelegramAuthGuard';
+import TelegramGuard from '../components/auxiliary/TelegramGuard';
 import WelcomeNotification from '../components/mainpage/WelcomeNotification';
 
 import { useMutation } from '@tanstack/react-query';
 import { generateItinerary } from '../lib/actions';
 import { fetchPlacePhotos } from '../lib/googleMapsService';
 import { useItineraryCosts } from '../hooks/useOperationCosts';
+import useTelegram from '../hooks/useTelegram';
+import { useTelegramAuthStore } from '../store/telegramAuthStore';
 
 import { useUIStore } from '../store/uiStore';
 import { usePreferencesStore } from '../store/preferencesStore';
@@ -63,11 +65,13 @@ const App: React.FC = () => {
     setUserData,
   } = useUserStore();
 
-  // Get Telegram user for reactive queries (memoized)
-  const telegramUser = useMemo(() => convexService.getTelegramUser(), []);
+  // Get Telegram user data from the new auth system
+  const { getTelegramUser } = useTelegram();
+  const { telegramUser: authTelegramUser } = useTelegramAuthStore();
+  const telegramUser = useMemo(() => authTelegramUser || getTelegramUser(), [authTelegramUser, getTelegramUser]);
   
   // Use Convex reactive queries with less frequent updates
-  const { data: liveUser, isLoading: userQueryLoading } = useUserByTelegramId(telegramUser?.id || null);
+  const { data: liveUser, isLoading: userQueryLoading } = useUserByTelegramId(telegramUser?.id?.toString() || null);
   const updateCreditsMutation = useUpdateUserCredits();
   const addSearchHistoryMutation = useAddSearchHistory();
   const setPreferencesMutation = useSetUserPreferences();
@@ -237,7 +241,7 @@ const App: React.FC = () => {
   }
 
   return (
-    <TelegramAuthGuard>
+    <TelegramGuard>
       <div className="relative h-screen w-screen bg-gray-900 overflow-hidden">
         {/* Background Map */}
         <Map />
@@ -292,7 +296,7 @@ const App: React.FC = () => {
             </div>
          )}
       </div>
-    </TelegramAuthGuard>
+    </TelegramGuard>
   );
 };
 
