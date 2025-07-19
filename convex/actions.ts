@@ -1,4 +1,4 @@
-import { action } from './_generated/server';
+import { action, internalAction } from './_generated/server';
 import { v } from 'convex/values';
 import { api, internal } from './_generated/api';
 import { ITEMS, MESSAGES } from './constants';
@@ -259,6 +259,99 @@ export const createInvoiceLink = action({
       return {
         success: false,
         error: error instanceof Error ? error.message : 'Unknown error'
+      };
+    }
+  },
+});
+
+// --- File Storage Actions ---
+
+export const storeExportedFile = action({
+  args: {
+    fileContent: v.string(), // Base64 encoded file content
+    filename: v.string(),
+    contentType: v.string(),
+    userId: v.id('users'),
+  },
+  handler: async (ctx, { fileContent, filename, contentType, userId }) => {
+    try {
+      // Convert base64 to Uint8Array
+      const binaryString = atob(fileContent);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      
+      // Store in Convex file storage
+      const storageId = await ctx.storage.store(new Blob([bytes], { type: contentType }));
+      
+      // Store metadata in database for tracking
+      const fileRecord = await ctx.runMutation(api.mutations.createExportedFile, {
+        storageId,
+        filename,
+        contentType,
+        userId,
+        size: bytes.length,
+      });
+      
+      // Generate a public URL
+      const url = await ctx.storage.getUrl(storageId);
+      
+      return {
+        success: true,
+        storageId,
+        url,
+        fileRecord,
+      };
+    } catch (error) {
+      console.error('Error storing exported file:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Failed to store file',
+      };
+    }
+  },
+});
+
+// File cleanup action - removes expired files (72 hours)
+export const cleanupExpiredFiles = internalAction({
+  args: {},
+  handler: async (ctx) => {
+    try {
+      const now = Date.now();
+      const expiredFiles = await ctx.runQuery(api.queries.getExpiredFiles, { currentTime: now });
+      
+      let deletedCount = 0;
+      let failedCount = 0;
+      
+      for (const file of expiredFiles) {
+        try {
+          // Delete from storage
+          await ctx.storage.delete(file.storageId);
+          
+          // Delete database record
+          await ctx.runMutation(api.mutations.deleteExportedFile, { fileId: file._id });
+          
+          deletedCount++;
+        } catch (error) {
+          console.error(`Failed to delete file ${file.filename}:`, error);
+          failedCount++;
+        }
+      }
+      
+      console.log(`File cleanup completed: ${deletedCount} deleted, ${failedCount} failed`);
+      
+      return {
+        success: true,
+        deletedCount,
+        failedCount,
+        totalExpired: expiredFiles.length,
+      };
+    } catch (error) {
+      console.error('File cleanup failed:', error);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : 'Cleanup failed',
       };
     }
   },

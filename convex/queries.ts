@@ -143,3 +143,43 @@ export const getPurchaseByChargeId = internalQuery({
       .unique();
   },
 });
+
+// File storage queries
+export const getExportedFileByStorageId = query({
+  args: { storageId: v.string() },
+  handler: async (ctx, { storageId }) => {
+    return await ctx.db
+      .query('exportedFiles')
+      .withIndex('by_storage_id', (q) => q.eq('storageId', storageId))
+      .unique();
+  },
+});
+
+export const getUserExportedFiles = query({
+  args: { userId: v.id('users') },
+  handler: async (ctx, { userId }) => {
+    const now = Date.now();
+    return await ctx.db
+      .query('exportedFiles')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .filter((q) => q.or(
+        q.eq(q.field('expiresAt'), undefined),
+        q.gt(q.field('expiresAt'), now)
+      ))
+      .order('desc')
+      .collect();
+  },
+});
+
+export const getExpiredFiles = query({
+  args: { currentTime: v.number() },
+  handler: async (ctx, { currentTime }) => {
+    return await ctx.db
+      .query('exportedFiles')
+      .filter((q) => q.and(
+        q.neq(q.field('expiresAt'), undefined),
+        q.lt(q.field('expiresAt'), currentTime)
+      ))
+      .collect();
+  },
+});

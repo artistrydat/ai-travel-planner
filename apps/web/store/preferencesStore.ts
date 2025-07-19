@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { PlannerPreferences } from '../types';
+import { PlannerPreferences } from '../types/types';
 
 const getTodayDateString = () => {
     const today = new Date();

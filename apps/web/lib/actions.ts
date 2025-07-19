@@ -1,7 +1,7 @@
 "use server";
 
 import { GoogleGenAI, Type, GenerateContentResponse } from "@google/genai";
-import { PlannerPreferences, Itinerary } from '../types';
+import { PlannerPreferences, Itinerary } from '../types/types';
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 

@@ -1,4 +1,4 @@
-import { Activity } from '../types';
+import { Activity } from '../types/types';
 
 // Helper to fetch place photos using the modern Place class
 export const fetchPlacePhotos = async (activities: Activity[]): Promise<Activity[]> => {

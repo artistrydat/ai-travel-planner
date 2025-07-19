@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useRef, useEffect } from 'react';
-import { Itinerary, Activity } from '../../types';
+import { Itinerary, Activity } from '../../types/types';
 import { Icon } from '../common/Icon';
 import { useItineraryStore } from '../../store/itineraryStore';
 import { useUIStore } from '../../store/uiStore';

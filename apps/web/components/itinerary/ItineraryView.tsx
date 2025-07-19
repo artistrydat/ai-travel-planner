@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { Activity, DailyWeather, FlightOption } from '../../types';
+import { Activity, DailyWeather, FlightOption } from '../../types/types';
 import { Icon } from '../common/Icon';
 import { useItineraryStore } from '../../store/itineraryStore';
 import { useUIStore } from '../../store/uiStore';

@@ -137,4 +137,41 @@ http.route({
   }),
 });
 
+// File serving endpoint
+http.route({
+  path: '/files/download',
+  method: 'GET',
+  handler: httpAction(async (ctx, request) => {
+    try {
+      const { searchParams } = new URL(request.url);
+      const storageId = searchParams.get('storageId');
+      
+      if (!storageId) {
+        return new Response('Missing storageId parameter', { status: 400 });
+      }
+      
+      // Get the file from storage
+      const blob = await ctx.storage.get(storageId);
+      
+      if (!blob) {
+        return new Response('File not found', { status: 404 });
+      }
+      
+      // Get file metadata
+      const fileRecord = await ctx.runQuery(api.queries.getExportedFileByStorageId, { storageId });
+      
+      // Set appropriate headers
+      const headers = new Headers();
+      headers.set('Content-Type', fileRecord?.contentType || 'application/octet-stream');
+      headers.set('Content-Disposition', `attachment; filename="${fileRecord?.filename || 'download'}"`);
+      headers.set('Access-Control-Allow-Origin', '*');
+      
+      return new Response(blob, { headers });
+    } catch (error) {
+      console.error('File download error:', error);
+      return errorResponse(error);
+    }
+  }),
+});
+
 export default http;

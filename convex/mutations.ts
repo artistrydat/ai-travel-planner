@@ -173,3 +173,33 @@ export const markAsRefunded = internalMutation({
     await ctx.db.patch(purchaseId, { isRefunded: true });
   },
 });
+
+// Export file mutations
+export const createExportedFile = mutation({
+  args: {
+    storageId: v.string(),
+    filename: v.string(),
+    contentType: v.string(),
+    userId: v.id('users'),
+    size: v.number(),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    const expiresAt = now + (72 * 60 * 60 * 1000); // 72 hours expiration
+    
+    return await ctx.db.insert('exportedFiles', {
+      ...args,
+      createdAt: now,
+      expiresAt,
+    });
+  },
+});
+
+export const deleteExportedFile = mutation({
+  args: {
+    fileId: v.id('exportedFiles'),
+  },
+  handler: async (ctx, { fileId }) => {
+    await ctx.db.delete(fileId);
+  },
+});

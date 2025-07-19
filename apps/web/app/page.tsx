@@ -22,7 +22,7 @@ import { useUIStore } from '../store/uiStore';
 import { usePreferencesStore } from '../store/preferencesStore';
 import { useItineraryStore } from '../store/itineraryStore';
 import { useUserStore } from '../store/userStore';
-import { Itinerary, PlannerPreferences } from '../types';
+import { Itinerary, PlannerPreferences } from '../types/types';
 
 // Import the new Convex hooks
 import { 

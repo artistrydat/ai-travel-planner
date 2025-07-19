@@ -69,4 +69,16 @@ export default defineSchema({
     telegramChargeId: v.string(),
     purchaseId: v.id('purchases'),
   }),
+
+  // File storage management
+  exportedFiles: defineTable({
+    storageId: v.string(),
+    filename: v.string(),
+    contentType: v.string(),
+    userId: v.id('users'),
+    size: v.number(),
+    createdAt: v.number(),
+    expiresAt: v.optional(v.number()), // Optional expiration timestamp
+  }).index('by_user', ['userId'])
+    .index('by_storage_id', ['storageId']),
 });

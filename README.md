@@ -1,6 +1,11 @@
 # AI Travel Planner
 
-An AI-powered travel planner that creates detailed itineraries based on your preferences, with both a web application and Telegram bot dashboard.
+An AI-powered travel planner that creates detailed itineraries based on your preferences, with both a web application and Tele## 📚 Documentation
+
+- **🤖 Telegram Integration**: See [TELEGRAM_AUTH.md](./Docs/TELEGRAM_AUTH.md) for complete Telegram WebApp setup
+- **🚀 Deployment Guide**: See [DEPLOYMENT.md](./Docs/DEPLOYMENT.md) for production deployment
+- **📄 Export Functionality**: See [EXPORT_FUNCTIONALITY.md](./Docs/EXPORT_FUNCTIONALITY.md) for file export system and platform compatibility
+- **🔧 Configuration**: All API keys and environment variables detailed in docsbot dashboard.
 
 ## 🚀 Features
 
@@ -205,6 +210,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 - **Issues**: Search existing GitHub issues
 - **Documentation**: Check [Docs/](./Docs/) folder
 - **Telegram Setup**: See [TELEGRAM_AUTH.md](./Docs/TELEGRAM_AUTH.md)
+- **Export Issues**: See [EXPORT_FUNCTIONALITY.md](./Docs/EXPORT_FUNCTIONALITY.md)
 - **Deployment Help**: See [DEPLOYMENT.md](./Docs/DEPLOYMENT.md)
 
 ---

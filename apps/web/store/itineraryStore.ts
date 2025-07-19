@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Itinerary } from '../types';
+import { Itinerary } from '../types/types';
 
 type ItineraryState = {
   itinerary: Itinerary | null;

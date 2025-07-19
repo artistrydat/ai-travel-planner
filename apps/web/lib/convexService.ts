@@ -1,4 +1,4 @@
-import { PlannerPreferences, Itinerary } from '../types';
+import { PlannerPreferences, Itinerary } from '../types/types';
 import { convex } from './convex';
 import { api } from '../convex/_generated/api';
 import { Id } from '../convex/_generated/dataModel';

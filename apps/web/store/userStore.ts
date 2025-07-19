@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import { SearchHistoryItem, CreditHistoryItem, UserProfile } from '../types';
+import { SearchHistoryItem, CreditHistoryItem, UserProfile } from '../types/types';
 import { convexService, ConvexUser, ConvexSearchHistory, ConvexCreditHistory } from '../lib/convexService';
 import { Id } from '../convex/_generated/dataModel';
 import { useTelegramAuthStore } from './telegramAuthStore';

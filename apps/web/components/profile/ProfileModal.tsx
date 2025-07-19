@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { SearchHistoryItem, CreditHistoryItem } from '../../types';
+import { SearchHistoryItem, CreditHistoryItem } from '../../types/types';
 import { Icon } from '../common/Icon';
 import Modal from '../common/Modal';
 import RefundInstructionsModal from '../auxiliary/RefundInstructionsModal';

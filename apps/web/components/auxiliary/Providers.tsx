@@ -9,6 +9,7 @@ import { ConvexErrorBoundary } from '../Error/ConvexErrorBoundary';
 import TelegramErrorBoundary from './TelegramErrorBoundary';
 import TelegramDebugger from './TelegramDebugger';
 import TelegramInitializer from './TelegramInitializer';
+import { ToastProvider } from './useToast';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [queryClient] = useState(() => new QueryClient({
@@ -43,11 +44,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
       <ConvexErrorBoundary>
         <ConvexProvider client={convex}>
           <QueryClientProvider client={queryClient}>
-            <TelegramErrorBoundary>
-              <TelegramDebugger />
-              <TelegramInitializer />
-              {children}
-            </TelegramErrorBoundary>
+            <ToastProvider>
+              <TelegramErrorBoundary>
+                <TelegramDebugger />
+                <TelegramInitializer />
+                {children}
+              </TelegramErrorBoundary>
+            </ToastProvider>
           </QueryClientProvider>
         </ConvexProvider>
       </ConvexErrorBoundary>

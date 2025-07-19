@@ -15,6 +15,7 @@ import type {
 } from "convex/server";
 import type * as actions from "../actions.js";
 import type * as constants from "../constants.js";
+import type * as crons from "../crons.js";
 import type * as http from "../http.js";
 import type * as mutations from "../mutations.js";
 import type * as queries from "../queries.js";
@@ -31,6 +32,7 @@ import type * as telegram from "../telegram.js";
 declare const fullApi: ApiFromModules<{
   actions: typeof actions;
   constants: typeof constants;
+  crons: typeof crons;
   http: typeof http;
   mutations: typeof mutations;
   queries: typeof queries;
