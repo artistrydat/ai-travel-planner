@@ -10,7 +10,8 @@ import { useUIStore } from '../../store/uiStore';
 import { useItineraryStore } from '../../store/itineraryStore';
 import { usePreferencesStore } from '../../store/preferencesStore';
 // Use reactive Convex queries instead of manual refresh
-import { useSearchHistory, useCreditHistory, useUserByTelegramId } from '../../hooks/useConvexQueries';
+import { useSearchHistory, useCreditHistory, useUserByTelegramId, useExportedFiles } from '../../hooks/useConvexQueries';
+import { useFileExport } from '../../hooks/useFileExport';
 import { Doc } from '../../convex/_generated/dataModel';
 
 interface ProfileModalProps {
@@ -36,6 +37,10 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
   const { data: liveUser, isLoading: userLoading } = useUserByTelegramId(user?.telegramId || null);
   const { data: convexSearchHistory = [], isLoading: searchLoading } = useSearchHistory(user?._id || null);
   const { data: convexCreditHistory = [], isLoading: creditLoading } = useCreditHistory(user?._id || null);
+  const { data: convexExportedFiles = [], isLoading: filesLoading } = useExportedFiles(user?._id || null);
+  
+  // Get file export functionality
+  const { openStoredFile } = useFileExport();
   
   // Use live credits from Convex instead of stale userStore credits
   const liveCredits = liveUser?.credits ?? 0;
@@ -67,6 +72,30 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
     purchaseId: item.purchaseId,
     telegramChargeId: item.telegramChargeId,
   }));
+  
+  // Helper function to find exported file for a credit history entry
+  const findExportedFileForCreditEntry = (creditEntry: CreditHistoryItem) => {
+    if (!creditEntry.action.startsWith('Export:')) return null;
+    
+    // Find file created around the same time as the credit entry
+    const creditTime = creditEntry.id; // createdAt timestamp
+    const timeWindow = 5000; // 5 seconds window
+    
+    return convexExportedFiles.find((file: Doc<"exportedFiles">) => 
+      Math.abs(file.createdAt - creditTime) <= timeWindow
+    );
+  };
+  
+  // Helper function to handle file opening
+  const handleOpenExportedFile = (file: Doc<"exportedFiles">) => {
+    const convexSiteUrl = process.env.NEXT_PUBLIC_CONVEX_HTTP_URL;
+    const downloadUrl = `${convexSiteUrl}/files/download?storageId=${file.storageId}`;
+    
+    // Extract format from filename
+    const format = file.filename.split('.').pop() || 'file';
+    
+    openStoredFile(downloadUrl, format);
+  };
   
   const { setItinerary } = useItineraryStore();
   const { setAllPreferences } = usePreferencesStore();
@@ -158,7 +187,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
         {/* Tab Content */}
         <div className="flex-grow bg-slate-800 p-3 overflow-y-auto relative">
           {/* Show loading overlay when refreshing */}
-          {(searchLoading || creditLoading || userLoading) && (
+          {(searchLoading || creditLoading || userLoading || filesLoading) && (
             <div className="absolute inset-0 bg-slate-800/50 flex items-center justify-center z-10">
               <div className="text-white text-center">
                 <svg className="animate-spin h-5 w-5 text-indigo-400 mb-1.5 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -171,7 +200,14 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ isOpen, onClose }) => {
           )}
           {/* Show content */}
           {activeTab === 'search' && <SearchHistoryList items={liveSearchHistory} onViewItem={handleViewHistoryItem} />}
-          {activeTab === 'credits' && <CreditHistoryList items={liveCreditHistory} onRefund={handleRefundClick} />}
+          {activeTab === 'credits' && (
+            <CreditHistoryList 
+              items={liveCreditHistory} 
+              onRefund={handleRefundClick}
+              onOpenFile={handleOpenExportedFile}
+              findExportedFile={findExportedFileForCreditEntry}
+            />
+          )}
         </div>
       </div>
       
@@ -244,7 +280,12 @@ const PreferenceChip: React.FC<{ icon: string, text: string }> = ({ icon, text }
 );
 
 // Credit History Components
-const CreditHistoryList: React.FC<{ items: CreditHistoryItem[]; onRefund: (telegramChargeId: string, purchaseId: string) => void }> = ({ items, onRefund }) => {
+const CreditHistoryList: React.FC<{ 
+  items: CreditHistoryItem[]; 
+  onRefund: (telegramChargeId: string, purchaseId: string) => void;
+  onOpenFile: (file: Doc<"exportedFiles">) => void;
+  findExportedFile: (creditEntry: CreditHistoryItem) => Doc<"exportedFiles"> | null;
+}> = ({ items, onRefund, onOpenFile, findExportedFile }) => {
   if (items.length === 0) {
     return (
       <div className="text-center py-6 text-gray-400">
@@ -257,12 +298,25 @@ const CreditHistoryList: React.FC<{ items: CreditHistoryItem[]; onRefund: (teleg
 
   return (
     <div className="space-y-1.5">
-      {[...items].sort((a, b) => b.id - a.id).map(item => <CreditHistoryCard key={item.id} item={item} onRefund={onRefund} />)}
+      {[...items].sort((a, b) => b.id - a.id).map(item => (
+        <CreditHistoryCard 
+          key={item.id} 
+          item={item} 
+          onRefund={onRefund}
+          onOpenFile={onOpenFile}
+          exportedFile={findExportedFile(item)}
+        />
+      ))}
     </div>
   );
 };
 
-const CreditHistoryCard: React.FC<{ item: CreditHistoryItem; onRefund: (telegramChargeId: string, purchaseId: string) => void }> = ({ item, onRefund }) => {
+const CreditHistoryCard: React.FC<{ 
+  item: CreditHistoryItem; 
+  onRefund: (telegramChargeId: string, purchaseId: string) => void;
+  onOpenFile: (file: Doc<"exportedFiles">) => void;
+  exportedFile: Doc<"exportedFiles"> | null;
+}> = ({ item, onRefund, onOpenFile, exportedFile }) => {
   const isCredit = item.amount > 0;
   const isPurchase = item.action.toLowerCase().includes('purchase') && item.telegramChargeId && item.purchaseId;
   
@@ -282,14 +336,26 @@ const CreditHistoryCard: React.FC<{ item: CreditHistoryItem; onRefund: (telegram
           </p>
           <p className="text-xs text-gray-400">Bal: {item.balance}</p>
         </div>
-        {isPurchase && (
-          <button
-            onClick={() => onRefund(item.telegramChargeId!, item.purchaseId!)}
-            className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-2 py-1 rounded text-xs font-semibold transition-colors"
-          >
-            Refund
-          </button>
-        )}
+        <div className="flex flex-col gap-1">
+          {/* Show Open File button for export entries that have a file */}
+          {exportedFile && (
+            <button
+              onClick={() => onOpenFile(exportedFile)}
+              className="bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-400 hover:text-indigo-300 px-2 py-1 rounded text-xs font-semibold transition-colors"
+            >
+              Open File
+            </button>
+          )}
+          {/* Show Refund button for purchases */}
+          {isPurchase && (
+            <button
+              onClick={() => onRefund(item.telegramChargeId!, item.purchaseId!)}
+              className="bg-red-500/20 hover:bg-red-500/30 text-red-400 hover:text-red-300 px-2 py-1 rounded text-xs font-semibold transition-colors"
+            >
+              Refund
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

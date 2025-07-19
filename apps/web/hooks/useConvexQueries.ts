@@ -43,6 +43,18 @@ export const useCreditHistory = (userId: Id<"users"> | null) => {
   });
 };
 
+export const useExportedFiles = (userId: Id<"users"> | null) => {
+  return useQuery({
+    queryKey: ['exportedFiles', userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      return await convex.query(api.queries.getUserExportedFiles, { userId });
+    },
+    enabled: !!userId,
+    staleTime: 1 * 60 * 1000, // 1 minute (shorter because files can expire)
+  });
+};
+
 export const useUserPreferences = (userId: Id<"users"> | null) => {
   return useQuery({
     queryKey: ['userPreferences', userId],
