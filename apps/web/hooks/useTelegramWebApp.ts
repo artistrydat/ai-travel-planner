@@ -44,12 +44,15 @@ export function useTelegramWebApp() {
   return {
     webApp,
     isReady,
-    // Helper methods - check for Telegram environment even if WebApp is not available
-    isTelegram: !!webApp || (typeof window !== 'undefined' && (
+    // Helper methods - check for actual Telegram environment, not just script availability
+    isTelegram: typeof window !== 'undefined' && (
       navigator.userAgent.includes('Telegram') || 
       navigator.userAgent.includes('TelegramBot') ||
-      !!(window as any).TelegramWebviewProxy
-    )),
+      !!(window as any).TelegramWebviewProxy ||
+      // Check if webApp has valid user data or initData (indicates real Telegram environment)
+      (webApp && webApp.initData && webApp.initData.length > 0) ||
+      (webApp && webApp.initDataUnsafe?.user?.id)
+    ),
     user: webApp?.initDataUnsafe?.user || null,
     initData: webApp?.initData || '',
     themeParams: webApp?.themeParams || {},
