@@ -27,6 +27,42 @@ const LandingPage: React.FC = () => {
       document.documentElement.style.setProperty('--tg-theme-bg-color', webApp.backgroundColor || '#ffffff');
       document.documentElement.style.setProperty('--tg-theme-button-color', webApp.themeParams.button_color || '#2481cc');
     }
+
+    // Add custom CSS animations for UIVERSE effects
+    const style = document.createElement('style');
+    style.textContent = `
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes spin-slow-reverse {
+        from { transform: rotate(360deg); }
+        to { transform: rotate(0deg); }
+      }
+      .animate-spin-slow {
+        animation: spin-slow 8s linear infinite;
+      }
+      .animate-spin-slow-reverse {
+        animation: spin-slow-reverse 6s linear infinite;
+      }
+      .cta-button::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        border-radius: 1.5rem;
+        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
+        transform: translateX(-100%);
+        transition: transform 0.6s;
+      }
+      .cta-button:hover::before {
+        transform: translateX(100%);
+      }
+    `;
+    document.head.appendChild(style);
+
+    return () => {
+      document.head.removeChild(style);
+    };
   }, [isTelegram, webApp]);
 
   const handleTelegramLaunch = () => {
@@ -79,107 +115,270 @@ const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Hero Section */}
+      {/* Hero Section - Enhanced UIVERSE Style */}
       <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
         <div className="text-center mb-20">
-          <div className="mb-8">
-            <span className="inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 text-purple-300 text-sm font-medium mb-6">
+          {/* Floating Badge */}
+          <div className="mb-8 relative">
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 animate-pulse"></div>
+            <span className="relative inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 text-purple-300 text-sm font-medium backdrop-blur-xl shadow-2xl hover:scale-105 transition-all duration-300">
+              <span className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></span>
               ✨ AI-Powered Travel Intelligence
+              <span className="w-2 h-2 bg-pink-400 rounded-full ml-2 animate-pulse"></span>
             </span>
           </div>
           
-          <h2 className="text-5xl md:text-7xl font-bold mb-8 leading-tight">
-            <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-300 bg-clip-text text-transparent">
-              Plan Your Perfect Trip
-            </span>
-            <br />
-            <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent">
-              with AI Intelligence
-            </span>
-          </h2>
+          {/* Enhanced Hero Title with Floating Elements */}
+          <div className="relative mb-8">
+            {/* Floating animated circles */}
+            <div className="absolute -top-10 left-1/4 w-6 h-6 bg-purple-400/30 rounded-full animate-bounce delay-100"></div>
+            <div className="absolute -top-6 right-1/3 w-4 h-4 bg-cyan-400/40 rounded-full animate-bounce delay-300"></div>
+            <div className="absolute top-4 left-1/6 w-3 h-3 bg-pink-400/50 rounded-full animate-bounce delay-500"></div>
+            <div className="absolute top-8 right-1/4 w-5 h-5 bg-emerald-400/30 rounded-full animate-bounce delay-700"></div>
+            
+            <h2 className="text-5xl md:text-7xl font-bold leading-tight relative">
+              <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-300 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 inline-block">
+                Plan Your Perfect Trip
+              </span>
+              <br />
+              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 inline-block">
+                with AI Intelligence
+              </span>
+              
+              {/* Animated underline */}
+              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-1 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full transition-all duration-1000 hover:w-32"></div>
+            </h2>
+          </div>
           
-          <p className="text-xl text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
-            Get personalized travel itineraries powered by advanced AI. From hidden gems to must-see attractions, 
-            we'll create the perfect plan tailored to your preferences.
-          </p>
+          {/* Enhanced Description */}
+          <div className="relative mb-12">
+            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed relative z-10">
+              Get personalized travel itineraries powered by advanced AI. From hidden gems to must-see attractions, 
+              we'll create the perfect plan tailored to your preferences.
+            </p>
+            {/* Subtle glow effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-xl blur-xl"></div>
+          </div>
           
-          {/* Primary CTA */}
-          <div className="mb-12">
+          {/* Enhanced Primary CTA with UIVERSE Button */}
+          <div className="mb-12 relative">
+            {/* Floating rings */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-32 h-32 border border-purple-400/20 rounded-full animate-spin-slow"></div>
+              <div className="absolute w-24 h-24 border border-cyan-400/30 rounded-full animate-spin-slow-reverse"></div>
+            </div>
+            
             <button
               onClick={handleTelegramLaunch}
-              className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 text-white font-bold py-6 px-10 rounded-2xl text-lg transition-all duration-500 transform hover:scale-105 shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40"
+              className="cta-button relative group inline-flex items-center gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 text-white font-bold py-6 px-12 rounded-3xl text-lg transition-all duration-500 transform hover:scale-110 shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/50 border-2 border-transparent hover:border-white/30"
               style={{
                 backgroundColor: 'var(--tg-theme-button-color, #6366F1)'
               }}
             >
-              <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <span className="text-2xl">🚀</span>
-              <span className="relative z-10">Start Planning on Telegram</span>
-              <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-300 -z-10"></div>
+              {/* Animated background overlay */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              {/* Pulsing glow */}
+              <div className="absolute -inset-2 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-3xl blur-lg opacity-30 group-hover:opacity-60 transition-opacity duration-300 animate-pulse"></div>
+              
+              {/* Button content */}
+              <div className="relative z-10 flex items-center gap-4">
+                <div className="relative">
+                  <span className="text-3xl transition-transform duration-300 group-hover:scale-125">🚀</span>
+                  <div className="absolute inset-0 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
+                </div>
+                
+                <span className="tracking-wide text-xl font-extrabold">Start Planning on Telegram</span>
+                
+                {/* Animated arrow */}
+                <div className="transition-transform duration-300 group-hover:translate-x-1">
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/>
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Ripple effect */}
+              <div className="absolute inset-0 rounded-3xl opacity-0 group-active:opacity-30 bg-white transition-opacity duration-150"></div>
             </button>
-            <p className="text-sm text-gray-400 mt-4">
-              Get 10 free credits to start planning immediately!
-            </p>
+            
+            {/* Enhanced credit info */}
+            <div className="mt-6 relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-2xl blur"></div>
+              <p className="relative text-emerald-300 font-bold text-lg backdrop-blur-sm bg-black/20 rounded-2xl px-6 py-3 border border-emerald-400/30">
+                <span className="animate-pulse">💎</span> Get 10 free credits to start planning immediately!
+              </p>
+            </div>
           </div>
 
-          {/* Enhanced Free Credits Promotion */}
-          <div className="inline-flex items-center bg-gradient-to-r from-emerald-500/20 to-cyan-500/20 border border-emerald-400/40 rounded-2xl px-8 py-4 backdrop-blur-sm">
-            <div className="flex items-center gap-3">
-              <div className="flex -space-x-1">
-                <div className="w-8 h-8 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-sm font-bold">⭐</div>
-                <div className="w-8 h-8 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center text-sm font-bold text-white">10</div>
+          {/* Enhanced Free Credits Promotion - UIVERSE Card */}
+          <div className="relative group">
+            {/* Rotating border effect */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow"></div>
+            
+            <div className="relative bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border-2 border-emerald-400/40 rounded-3xl px-10 py-6 backdrop-blur-xl shadow-2xl hover:shadow-emerald-500/20 transition-all duration-500 hover:scale-105">
+              {/* Floating particles */}
+              <div className="absolute top-2 left-4 w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
+              <div className="absolute bottom-3 right-6 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping delay-500"></div>
+              <div className="absolute top-1/2 left-2 w-1 h-1 bg-emerald-300 rounded-full animate-pulse"></div>
+              
+              <div className="flex items-center justify-center gap-6">
+                {/* Animated credit icons */}
+                <div className="flex items-center -space-x-2">
+                  <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-lg font-bold shadow-xl transform hover:scale-110 transition-transform duration-300 z-10">
+                    ⭐
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-xl transform hover:scale-110 transition-transform duration-300">
+                    10
+                  </div>
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-xl transform hover:scale-110 transition-transform duration-300">
+                    💎
+                  </div>
+                </div>
+                
+                {/* Enhanced text */}
+                <div className="text-center">
+                  <span className="text-emerald-300 font-bold text-xl bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
+                    New users get 10 free credits
+                  </span>
+                  <div className="text-emerald-400 font-extrabold text-2xl mt-1">
+                    worth $10 💸
+                  </div>
+                </div>
+                
+                {/* Pulse effect */}
+                <div className="w-8 h-8 bg-emerald-400/30 rounded-full animate-pulse flex items-center justify-center">
+                  <div className="w-4 h-4 bg-emerald-400 rounded-full animate-ping"></div>
+                </div>
               </div>
-              <span className="text-emerald-300 font-bold text-lg">
-                New users get 10 free credits worth $10
-              </span>
+              
+              {/* Shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Features Section */}
+        {/* Enhanced Features Section - UIVERSE Style */}
         <div className="grid md:grid-cols-3 gap-8 mb-20">
-          <div className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-purple-400/40 transition-all duration-500 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-br from-purple-500/5 to-pink-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9M19 19H5V3H13V9H19Z"/>
-                </svg>
+          {/* AI-Powered Planning Card */}
+          <div className="group relative overflow-hidden">
+            {/* Animated border */}
+            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow"></div>
+            
+            <div className="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-purple-400/40 transition-all duration-500 hover:scale-105 h-80 flex flex-col justify-between">
+              {/* Floating particles */}
+              <div className="absolute top-4 right-4 w-2 h-2 bg-purple-400 rounded-full animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute bottom-6 left-4 w-1.5 h-1.5 bg-pink-400 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              <div className="relative z-10">
+                {/* Enhanced icon with rotation */}
+                <div className="relative mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+                    <svg className="w-10 h-10 text-white group-hover:animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9M19 19H5V3H13V9H19Z"/>
+                    </svg>
+                  </div>
+                  {/* Orbiting elements */}
+                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-purple-400/50 rounded-full animate-bounce opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                  <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-pink-400/60 rounded-full animate-bounce delay-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+                </div>
+                
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-200 transition-colors duration-300">
+                  AI-Powered Planning
+                </h3>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-200 transition-colors">AI-Powered Planning</h3>
-              <p className="text-gray-300 leading-relaxed">
+              
+              <p className="text-gray-300 leading-relaxed relative z-10 group-hover:text-gray-200 transition-colors duration-300">
                 Advanced AI creates personalized itineraries based on your preferences, budget, and travel style.
               </p>
+              
+              {/* Hover shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
             </div>
           </div>
 
-          <div className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-cyan-400/40 transition-all duration-500 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/5 to-blue-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6Z"/>
-                </svg>
+          {/* Interactive Maps Card */}
+          <div className="group relative overflow-hidden">
+            {/* Animated border */}
+            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow-reverse"></div>
+            
+            <div className="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-cyan-400/40 transition-all duration-500 hover:scale-105 h-80 flex flex-col justify-between">
+              {/* Floating particles */}
+              <div className="absolute top-6 left-6 w-2 h-2 bg-cyan-400 rounded-full animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute bottom-4 right-6 w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              <div className="relative z-10">
+                {/* Enhanced icon with pulse */}
+                <div className="relative mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
+                    <svg className="w-10 h-10 text-white group-hover:animate-spin" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6Z"/>
+                    </svg>
+                  </div>
+                  {/* Ripple effect */}
+                  <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
+                </div>
+                
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-200 transition-colors duration-300">
+                  Interactive Maps
+                </h3>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-200 transition-colors">Interactive Maps</h3>
-              <p className="text-gray-300 leading-relaxed">
+              
+              <p className="text-gray-300 leading-relaxed relative z-10 group-hover:text-gray-200 transition-colors duration-300">
                 Visualize your entire trip on beautiful interactive maps with photos and detailed location information.
               </p>
+              
+              {/* Hover shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
             </div>
           </div>
 
-          <div className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-emerald-400/40 transition-all duration-500 hover:scale-105">
-            <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/5 to-green-500/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <div className="relative z-10">
-              <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-300">
-                <svg className="w-10 h-10 text-white" fill="currentColor" viewBox="0 0 24 24">
-                  <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                </svg>
+          {/* Export & Share Card */}
+          <div className="group relative overflow-hidden">
+            {/* Animated border */}
+            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-500 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow"></div>
+            
+            <div className="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-emerald-400/40 transition-all duration-500 hover:scale-105 h-80 flex flex-col justify-between">
+              {/* Floating particles */}
+              <div className="absolute top-5 right-5 w-2 h-2 bg-emerald-400 rounded-full animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute bottom-5 left-5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+              
+              {/* Gradient overlay on hover */}
+              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              
+              <div className="relative z-10">
+                {/* Enhanced icon with scale */}
+                <div className="relative mb-6">
+                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
+                    <svg className="w-10 h-10 text-white group-hover:animate-bounce" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+                    </svg>
+                  </div>
+                  {/* Success checkmark on hover */}
+                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100">
+                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+                      <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
+                    </svg>
+                  </div>
+                </div>
+                
+                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-emerald-200 transition-colors duration-300">
+                  Export & Share
+                </h3>
               </div>
-              <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-emerald-200 transition-colors">Export & Share</h3>
-              <p className="text-gray-300 leading-relaxed">
+              
+              <p className="text-gray-300 leading-relaxed relative z-10 group-hover:text-gray-200 transition-colors duration-300">
                 Export your itineraries to PDF or share them with friends. Access offline when you're traveling.
               </p>
+              
+              {/* Hover shine effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
             </div>
           </div>
         </div>
@@ -192,8 +391,10 @@ const LandingPage: React.FC = () => {
                 Popular Destinations
               </span>
             </h3>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-              {recentSearches.slice(0, 8).map((search: SearchItem, index: number) => {
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {recentSearches.slice(0, 6).map((search: any, index: number) => {
+                // Use itinerary preview if available
+                const itinerary = search.itinerary?.itinerary?.[0];
                 const gradients = [
                   'from-purple-500 to-pink-600',
                   'from-cyan-500 to-blue-600',
@@ -201,35 +402,90 @@ const LandingPage: React.FC = () => {
                   'from-orange-500 to-red-600'
                 ];
                 const gradient = gradients[index % gradients.length];
-                
-                // Create a slug from destination name
-                const slug = search.destination.toLowerCase()
-                  .replace(/[^a-z0-9\s]/g, '')
-                  .replace(/\s+/g, '-')
-                  .replace(/--+/g, '-')
-                  .trim()
-                  .substring(0, 20);
-                
-                // Simplified destination name for display
                 const displayName = search.destination.split(',')[0];
-                
                 return (
-                  <Link 
-                    key={index} 
-                    href={`/destination/${slug === 'kuta-selatan-south' ? 'bali' : slug === 'dubai' ? 'dubai' : slug}`}
-                    className="group relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-2xl p-6 border border-white/10 backdrop-blur-xl hover:border-white/20 transition-all duration-300 hover:scale-105 cursor-pointer"
+                  <Link
+                    key={index}
+                    href={`/trip/${search._id}`}
+                    className="group relative overflow-hidden rounded-3xl transition-all duration-500 hover:scale-105 cursor-pointer"
                   >
-                    <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                    <div className="relative z-10">
-                      <div className={`w-12 h-12 bg-gradient-to-br ${gradient} rounded-xl flex items-center justify-center mx-auto mb-4 shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                        <span className="text-xl">🌍</span>
+                    {/* Card Container with Glass Effect */}
+                    <div className="relative bg-slate-800/20 backdrop-blur-xl rounded-3xl border border-white/10 overflow-hidden transition-all duration-500 group-hover:border-white/20 group-hover:shadow-2xl group-hover:shadow-white/10">
+                      
+                      {/* Background Image with Overlay */}
+                      {itinerary?.imageUrl && (
+                        <div className="absolute inset-0">
+                          <img
+                            src={itinerary.imageUrl}
+                            alt={itinerary.title}
+                            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-black/20"></div>
+                        </div>
+                      )}
+                      
+                      {/* Animated Background for Cards Without Images */}
+                      {!itinerary?.imageUrl && (
+                        <div className="absolute inset-0">
+                          <div className={`w-full h-full bg-gradient-to-br ${gradient} opacity-20`}></div>
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+                        </div>
+                      )}
+                      
+                      {/* Content */}
+                      <div className="relative z-10 p-8 h-80 flex flex-col justify-between">
+                        
+                        {/* Top Section */}
+                        <div className="text-center">
+                          <div className="relative mb-6">
+                            <div className={`w-16 h-16 bg-gradient-to-br ${gradient} rounded-2xl flex items-center justify-center mx-auto shadow-2xl transition-all duration-300 group-hover:scale-110 group-hover:rotate-6`}>
+                              <span className="text-2xl">🌍</span>
+                            </div>
+                            <div className="absolute -inset-2 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur-xl"></div>
+                          </div>
+                          
+                          <h4 className="font-bold text-white text-xl leading-tight mb-3 group-hover:text-gray-100 transition-colors">
+                            {displayName}
+                          </h4>
+                          
+                          {/* Itinerary Preview */}
+                          {itinerary && (
+                            <div className="mb-4">
+                              <p className="text-gray-200 text-sm font-medium mb-2 truncate group-hover:text-white transition-colors">
+                                {itinerary.title}
+                              </p>
+                              <div className="flex items-center justify-center space-x-2 text-xs text-gray-300">
+                                <span className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                                  Day {itinerary.day}
+                                </span>
+                                <span>•</span>
+                                <span className="bg-white/20 backdrop-blur-sm px-2 py-1 rounded-full">
+                                  {itinerary.startTime}
+                                </span>
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                        
+                        {/* Bottom Section */}
+                        <div className="text-center">
+                          {/* Hover Effect Line */}
+                          <div className="w-0 h-0.5 bg-gradient-to-r from-transparent via-white to-transparent mx-auto mb-4 transition-all duration-500 group-hover:w-full"></div>
+                          
+                          {/* Call to Action */}
+                          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0">
+                            <div className="bg-white/10 backdrop-blur-sm border border-white/20 rounded-xl px-4 py-2 text-xs text-white font-medium">
+                              ✨ View Full Itinerary
+                            </div>
+                          </div>
+                        </div>
                       </div>
-                      <p className="font-bold text-white text-center group-hover:text-gray-200 transition-colors text-sm leading-tight">
-                        {displayName}
-                      </p>
-                      <div className="mt-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                        <div className="w-full h-0.5 bg-gradient-to-r from-transparent via-white/30 to-transparent"></div>
-                        <p className="text-xs text-gray-400 text-center mt-2">Click to explore</p>
+                      
+                      {/* Floating Elements */}
+                      <div className="absolute top-4 right-4 w-8 h-8 bg-white/10 backdrop-blur-sm rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                        <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/>
+                        </svg>
                       </div>
                     </div>
                   </Link>
@@ -408,31 +664,86 @@ const LandingPage: React.FC = () => {
           </div>
         </div>
 
-        {/* Final CTA */}
-        <div className="text-center">
-          <h3 className="text-4xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-300 bg-clip-text text-transparent">
-              Ready to Start Your Adventure?
-            </span>
-          </h3>
-          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">
+        {/* Enhanced Final CTA - UIVERSE Style */}
+        <div className="text-center relative">
+          {/* Floating background elements */}
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-64 h-64 bg-gradient-to-r from-purple-500/10 to-cyan-500/10 rounded-full blur-3xl animate-pulse"></div>
+          </div>
+          
+          {/* Enhanced title */}
+          <div className="relative mb-6">
+            <h3 className="text-4xl font-bold relative z-10">
+              <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-300 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 inline-block">
+                Ready to Start Your Adventure?
+              </span>
+            </h3>
+            {/* Animated elements */}
+            <div className="absolute -top-4 left-1/4 w-6 h-6 text-2xl animate-bounce delay-100">✈️</div>
+            <div className="absolute -top-2 right-1/4 w-6 h-6 text-2xl animate-bounce delay-300">🌟</div>
+            <div className="absolute top-2 left-1/6 w-6 h-6 text-xl animate-bounce delay-500">🗺️</div>
+          </div>
+          
+          <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto relative z-10">
             Join thousands of travelers who trust AI Travel Planner for their perfect trips
           </p>
-          <button
-            onClick={handleTelegramLaunch}
-            className="group relative inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 text-white font-bold py-6 px-12 rounded-2xl text-xl transition-all duration-500 transform hover:scale-105 shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/40"
-            style={{
-              backgroundColor: 'var(--tg-theme-button-color, #6366F1)'
-            }}
-          >
-            <div className="absolute inset-0 bg-white/20 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-            <span className="text-2xl">✈️</span>
-            <span className="relative z-10">Launch AI Travel Planner</span>
-            <div className="absolute -inset-1 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-2xl blur opacity-30 group-hover:opacity-60 transition-opacity duration-300 -z-10"></div>
-          </button>
-          <p className="text-sm text-gray-400 mt-4">
-            Available exclusively on Telegram
-          </p>
+          
+          {/* Enhanced final CTA button */}
+          <div className="relative mb-6">
+            {/* Pulsing rings */}
+            <div className="absolute inset-0 flex items-center justify-center">
+              <div className="w-40 h-20 border border-indigo-400/30 rounded-full animate-ping opacity-30"></div>
+              <div className="absolute w-32 h-16 border border-purple-400/40 rounded-full animate-ping delay-500 opacity-40"></div>
+            </div>
+            
+            <button
+              onClick={handleTelegramLaunch}
+              className="cta-button relative group inline-flex items-center gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 text-white font-bold py-8 px-16 rounded-3xl text-xl transition-all duration-500 transform hover:scale-110 shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/50 border-2 border-transparent hover:border-white/30"
+              style={{
+                backgroundColor: 'var(--tg-theme-button-color, #6366F1)'
+              }}
+            >
+              {/* Multiple layered backgrounds */}
+              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              <div className="absolute -inset-2 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-3xl blur-lg opacity-30 group-hover:opacity-60 transition-opacity duration-300 animate-pulse"></div>
+              
+              {/* Button content with enhanced animations */}
+              <div className="relative z-10 flex items-center gap-4">
+                <div className="relative">
+                  <span className="text-4xl transition-all duration-500 group-hover:scale-125 group-hover:rotate-12">✈️</span>
+                  <div className="absolute inset-0 bg-white/30 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur animate-pulse"></div>
+                </div>
+                
+                <span className="tracking-wide text-2xl font-extrabold bg-gradient-to-r from-white to-purple-100 bg-clip-text text-transparent">
+                  Launch AI Travel Planner
+                </span>
+                
+                {/* Enhanced animated arrow */}
+                <div className="transition-all duration-500 group-hover:translate-x-2 group-hover:scale-125">
+                  <svg className="w-8 h-8 group-hover:animate-pulse" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/>
+                  </svg>
+                </div>
+              </div>
+              
+              {/* Enhanced ripple effect */}
+              <div className="absolute inset-0 rounded-3xl opacity-0 group-active:opacity-40 bg-white transition-opacity duration-200"></div>
+              
+              {/* Particle burst on click */}
+              <div className="absolute inset-0 pointer-events-none">
+                <div className="absolute top-1/2 left-1/2 w-2 h-2 bg-white rounded-full transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-active:opacity-100 group-active:animate-ping"></div>
+              </div>
+            </button>
+          </div>
+          
+          {/* Enhanced availability text */}
+          <div className="relative">
+            <p className="text-gray-400 relative z-10 bg-black/20 backdrop-blur-sm rounded-2xl px-6 py-3 border border-gray-600/30 inline-block">
+              <span className="animate-pulse">📱</span> Available exclusively on Telegram
+            </p>
+            {/* Subtle glow */}
+            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-2xl blur"></div>
+          </div>
         </div>
       </main>
 

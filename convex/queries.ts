@@ -112,25 +112,78 @@ export const getRecentPopularSearches = query({
       .filter(q => q.gte(q.field('_creationTime'), sevenDaysAgo))
       .collect();
     
-    // Group by destination and count frequency
-    const destinationCounts = new Map<string, number>();
+    // Group by destination and count frequency, include full itinerary data and ID
+    const destinationMap = new Map<string, { destination: string, count: number, itinerary: any, _id: string, _creationTime: number }>();
     
     for (const search of recentSearches) {
       const destination = search.destination;
-      destinationCounts.set(destination, (destinationCounts.get(destination) || 0) + 1);
+      const existing = destinationMap.get(destination);
+      if (existing) {
+        existing.count += 1;
+        // Keep the most recent one
+        if (search._creationTime > existing._creationTime) {
+          existing._id = search._id;
+          existing._creationTime = search._creationTime;
+          existing.itinerary = search.itinerary;
+        }
+      } else {
+        destinationMap.set(destination, {
+          destination: search.destination,
+          count: 1,
+          itinerary: search.itinerary, // Include the full itinerary data
+          _id: search._id, // Include the ID for direct linking
+          _creationTime: search._creationTime
+        });
+      }
     }
     
     // Convert to array and sort by popularity
-    const popularDestinations = Array.from(destinationCounts.entries())
-      .map(([destination, count]) => ({ destination, count }))
+    const popularDestinations = Array.from(destinationMap.values())
       .sort((a, b) => b.count - a.count)
       .slice(0, 12); // Top 12 destinations
     
     return popularDestinations.map(item => ({
       destination: item.destination,
-      createdAt: Date.now() // Using current time for consistency
+      createdAt: item._creationTime,
+      itinerary: item.itinerary, // Include itinerary data for preview
+      _id: item._id // Include ID for direct linking to trip page
     }));
   }
+});
+
+export const getSearchHistoryById = query({
+  args: { searchHistoryId: v.id('searchHistory') },
+  handler: async (ctx, { searchHistoryId }) => {
+    return await ctx.db.get(searchHistoryId);
+  },
+});
+
+export const getDestinationItineraries = query({
+  args: { destinationSlug: v.string() },
+  handler: async (ctx, args) => {
+    // Convert slug back to potential destination names
+    const searchTerms = args.destinationSlug
+      .split('-')
+      .map(term => term.charAt(0).toUpperCase() + term.slice(1))
+      .join(' ');
+    
+    // Find itineraries that contain the search terms in the destination
+    const itineraries = await ctx.db
+      .query("searchHistory")
+      .collect();
+    
+    // Filter based on destination containing key terms
+    const filtered = itineraries.filter(itinerary => {
+      const dest = itinerary.destination.toLowerCase();
+      return searchTerms.toLowerCase().split(' ').some(term => 
+        dest.includes(term.toLowerCase()) || 
+        (args.destinationSlug === 'bali' && dest.includes('bali')) ||
+        (args.destinationSlug === 'dubai' && dest.includes('dubai'))
+      );
+    });
+    
+    return filtered.slice(0, 12); // Limit to 12 itineraries
+  },
 });
 
 // Internal queries (for server-side operations)
