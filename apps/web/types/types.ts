@@ -19,7 +19,7 @@ export interface Activity {
   localTip: string;
   latitude: number;
   longitude: number;
-  placeId: string; // Google Maps Place ID
+  placeId?: string; // Google Maps Place ID (populated during verification)
   imageUrl?: string; // Will be fetched client-side
   rating: number;
   ratingCount: number;

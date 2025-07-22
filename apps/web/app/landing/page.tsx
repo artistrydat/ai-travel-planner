@@ -27,42 +27,6 @@ const LandingPage: React.FC = () => {
       document.documentElement.style.setProperty('--tg-theme-bg-color', webApp.backgroundColor || '#ffffff');
       document.documentElement.style.setProperty('--tg-theme-button-color', webApp.themeParams.button_color || '#2481cc');
     }
-
-    // Add custom CSS animations for UIVERSE effects
-    const style = document.createElement('style');
-    style.textContent = `
-      @keyframes spin-slow {
-        from { transform: rotate(0deg); }
-        to { transform: rotate(360deg); }
-      }
-      @keyframes spin-slow-reverse {
-        from { transform: rotate(360deg); }
-        to { transform: rotate(0deg); }
-      }
-      .animate-spin-slow {
-        animation: spin-slow 8s linear infinite;
-      }
-      .animate-spin-slow-reverse {
-        animation: spin-slow-reverse 6s linear infinite;
-      }
-      .cta-button::before {
-        content: '';
-        position: absolute;
-        inset: 0;
-        border-radius: 1.5rem;
-        background: linear-gradient(45deg, transparent, rgba(255,255,255,0.1), transparent);
-        transform: translateX(-100%);
-        transition: transform 0.6s;
-      }
-      .cta-button:hover::before {
-        transform: translateX(100%);
-      }
-    `;
-    document.head.appendChild(style);
-
-    return () => {
-      document.head.removeChild(style);
-    };
   }, [isTelegram, webApp]);
 
   const handleTelegramLaunch = () => {
@@ -77,37 +41,37 @@ const LandingPage: React.FC = () => {
 
   // Show normal landing page for all users
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden" style={{
-      backgroundColor: 'var(--tg-theme-bg-color, var(--color-bg))',
-      color: 'var(--tg-theme-text-color, var(--color-text-base))'
+    <div className="min-h-screen bg-white" style={{
+      backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
+      color: 'var(--tg-theme-text-color, #000000)'
     }}>
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-purple-400/20 to-pink-600/20 rounded-full blur-3xl animate-pulse"></div>
-        <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-gradient-to-tr from-blue-400/20 to-cyan-600/20 rounded-full blur-3xl animate-pulse delay-700"></div>
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-gradient-to-r from-indigo-500/10 to-purple-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
-      </div>
 
       {/* Header */}
-      <header className="relative z-10 bg-slate-900/60 backdrop-blur-xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <header className="border-b border-gray-200 bg-white" style={{
+        backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
+        borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
+      }}>
+        <div className="max-w-7xl mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center shadow-lg">
-                  <svg className="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M12 2L2 7v10c0 5.55 3.84 9.739 9 9.95 5.16-.212 9-4.4 9-9.95V7l-10-5z"/>
-                  </svg>
-                </div>
-                <div className="absolute -top-1 -right-1 w-4 h-4 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full animate-pulse"></div>
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center" style={{
+                backgroundColor: 'var(--tg-theme-button-color, #2563eb)'
+              }}>
+                <span className="text-white text-sm">🤖</span>
               </div>
-              <h1 className="text-xl font-bold bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent">AI Travel Planner</h1>
+              <h1 className="text-lg font-semibold" style={{
+                color: 'var(--tg-theme-text-color, #000000)'
+              }}>AI Travel Planner</h1>
             </div>
             <nav className="hidden md:flex space-x-6">
-              <Link href="/privacy" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 px-3 py-2 rounded-lg hover:bg-white/10">
+              <Link href="/privacy" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
+                color: 'var(--tg-theme-text-color, #6b7280)'
+              }}>
                 Privacy Policy
               </Link>
-              <Link href="/credits" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105 px-3 py-2 rounded-lg hover:bg-white/10">
+              <Link href="/credits" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
+                color: 'var(--tg-theme-text-color, #6b7280)'
+              }}>
                 Credit Policy
               </Link>
             </nav>
@@ -115,271 +79,152 @@ const LandingPage: React.FC = () => {
         </div>
       </header>
 
-      {/* Hero Section - Enhanced UIVERSE Style */}
-      <main className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-20">
-          {/* Floating Badge */}
-          <div className="mb-8 relative">
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-30 animate-pulse"></div>
-            <span className="relative inline-flex items-center px-6 py-3 rounded-full bg-gradient-to-r from-purple-500/20 to-pink-500/20 border border-purple-400/30 text-purple-300 text-sm font-medium backdrop-blur-xl shadow-2xl hover:scale-105 transition-all duration-300">
-              <span className="w-2 h-2 bg-purple-400 rounded-full mr-2 animate-pulse"></span>
+      {/* Hero Section */}
+      <main className="max-w-7xl mx-auto px-4 py-16">
+        <div className="text-center mb-16">
+          {/* Badge */}
+          <div className="mb-8">
+            <span className="inline-flex items-center px-4 py-2 rounded-full bg-blue-50 border border-blue-200 text-blue-700 text-sm font-medium" style={{
+              backgroundColor: 'var(--tg-theme-button-color, #dbeafe)',
+              color: 'var(--tg-theme-text-color, #1d4ed8)'
+            }}>
               ✨ AI-Powered Travel Intelligence
-              <span className="w-2 h-2 bg-pink-400 rounded-full ml-2 animate-pulse"></span>
             </span>
           </div>
           
-          {/* Enhanced Hero Title with Floating Elements */}
-          <div className="relative mb-8">
-            {/* Floating animated circles */}
-            <div className="absolute -top-10 left-1/4 w-6 h-6 bg-purple-400/30 rounded-full animate-bounce delay-100"></div>
-            <div className="absolute -top-6 right-1/3 w-4 h-4 bg-cyan-400/40 rounded-full animate-bounce delay-300"></div>
-            <div className="absolute top-4 left-1/6 w-3 h-3 bg-pink-400/50 rounded-full animate-bounce delay-500"></div>
-            <div className="absolute top-8 right-1/4 w-5 h-5 bg-emerald-400/30 rounded-full animate-bounce delay-700"></div>
-            
-            <h2 className="text-5xl md:text-7xl font-bold leading-tight relative">
-              <span className="bg-gradient-to-r from-white via-purple-200 to-cyan-300 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 inline-block">
-                Plan Your Perfect Trip
-              </span>
+          {/* Hero Title */}
+          <div className="mb-8">
+            <h2 className="text-4xl md:text-6xl font-bold leading-tight mb-4" style={{
+              color: 'var(--tg-theme-text-color, #111827)'
+            }}>
+              Plan Your Perfect Trip
               <br />
-              <span className="bg-gradient-to-r from-cyan-400 to-purple-400 bg-clip-text text-transparent hover:scale-105 transition-transform duration-300 inline-block">
-                with AI Intelligence
-              </span>
-              
-              {/* Animated underline */}
-              <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-0 h-1 bg-gradient-to-r from-purple-400 to-cyan-400 rounded-full transition-all duration-1000 hover:w-32"></div>
+              <span className="text-blue-600" style={{
+                color: 'var(--tg-theme-button-color, #2563eb)'
+              }}>with AI Intelligence</span>
             </h2>
           </div>
           
-          {/* Enhanced Description */}
-          <div className="relative mb-12">
-            <p className="text-xl text-gray-300 max-w-3xl mx-auto leading-relaxed relative z-10">
+          {/* Description */}
+          <div className="mb-12">
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed" style={{
+              color: 'var(--tg-theme-text-color, #6b7280)'
+            }}>
               Get personalized travel itineraries powered by advanced AI. From hidden gems to must-see attractions, 
               we'll create the perfect plan tailored to your preferences.
             </p>
-            {/* Subtle glow effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-xl blur-xl"></div>
           </div>
           
-          {/* Enhanced Primary CTA with UIVERSE Button */}
-          <div className="mb-12 relative">
-            {/* Floating rings */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-32 h-32 border border-purple-400/20 rounded-full animate-spin-slow"></div>
-              <div className="absolute w-24 h-24 border border-cyan-400/30 rounded-full animate-spin-slow-reverse"></div>
-            </div>
-            
+          {/* Primary CTA */}
+          <div className="mb-12">
             <button
               onClick={handleTelegramLaunch}
-              className="cta-button relative group inline-flex items-center gap-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:via-purple-500 hover:to-pink-500 text-white font-bold py-6 px-12 rounded-3xl text-lg transition-all duration-500 transform hover:scale-110 shadow-2xl shadow-purple-500/25 hover:shadow-purple-500/50 border-2 border-transparent hover:border-white/30"
+              className="inline-flex items-center gap-3 bg-blue-600 text-white font-bold py-4 px-8 rounded-lg text-lg hover:bg-blue-700 transition-colors shadow-lg"
               style={{
-                backgroundColor: 'var(--tg-theme-button-color, #6366F1)'
+                backgroundColor: 'var(--tg-theme-button-color, #2563eb)'
               }}
             >
-              {/* Animated background overlay */}
-              <div className="absolute inset-0 bg-gradient-to-r from-white/10 to-white/5 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              {/* Pulsing glow */}
-              <div className="absolute -inset-2 bg-gradient-to-r from-indigo-600 to-pink-600 rounded-3xl blur-lg opacity-30 group-hover:opacity-60 transition-opacity duration-300 animate-pulse"></div>
-              
-              {/* Button content */}
-              <div className="relative z-10 flex items-center gap-4">
-                <div className="relative">
-                  <span className="text-3xl transition-transform duration-300 group-hover:scale-125">🚀</span>
-                  <div className="absolute inset-0 bg-white/20 rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-300 blur"></div>
-                </div>
-                
-                <span className="tracking-wide text-xl font-extrabold">Start Planning on Telegram</span>
-                
-                {/* Animated arrow */}
-                <div className="transition-transform duration-300 group-hover:translate-x-1">
-                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
-                    <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/>
-                  </svg>
-                </div>
-              </div>
-              
-              {/* Ripple effect */}
-              <div className="absolute inset-0 rounded-3xl opacity-0 group-active:opacity-30 bg-white transition-opacity duration-150"></div>
+              <span>🚀</span>
+              <span>Start Planning on Telegram</span>
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M4,11V13H16L10.5,18.5L11.92,19.92L19.84,12L11.92,4.08L10.5,5.5L16,11H4Z"/>
+              </svg>
             </button>
             
-            {/* Enhanced credit info */}
-            <div className="mt-6 relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/10 to-cyan-500/10 rounded-2xl blur"></div>
-              <p className="relative text-emerald-300 font-bold text-lg backdrop-blur-sm bg-black/20 rounded-2xl px-6 py-3 border border-emerald-400/30">
-                <span className="animate-pulse">💎</span> Get 10 free credits to start planning immediately!
+            {/* Credit info */}
+            <div className="mt-6">
+              <p className="text-green-600 font-semibold text-lg bg-green-50 rounded-lg px-6 py-3 border border-green-200 inline-block">
+                💎 Get 10 free credits to start planning immediately!
               </p>
             </div>
           </div>
 
-          {/* Enhanced Free Credits Promotion - UIVERSE Card */}
-          <div className="relative group">
-            {/* Rotating border effect */}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-400 via-cyan-400 to-emerald-400 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow"></div>
-            
-            <div className="relative bg-gradient-to-br from-emerald-500/20 to-cyan-500/20 border-2 border-emerald-400/40 rounded-3xl px-10 py-6 backdrop-blur-xl shadow-2xl hover:shadow-emerald-500/20 transition-all duration-500 hover:scale-105">
-              {/* Floating particles */}
-              <div className="absolute top-2 left-4 w-2 h-2 bg-emerald-400 rounded-full animate-ping"></div>
-              <div className="absolute bottom-3 right-6 w-1.5 h-1.5 bg-cyan-400 rounded-full animate-ping delay-500"></div>
-              <div className="absolute top-1/2 left-2 w-1 h-1 bg-emerald-300 rounded-full animate-pulse"></div>
-              
-              <div className="flex items-center justify-center gap-6">
-                {/* Animated credit icons */}
-                <div className="flex items-center -space-x-2">
-                  <div className="w-12 h-12 bg-gradient-to-r from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-lg font-bold shadow-xl transform hover:scale-110 transition-transform duration-300 z-10">
-                    ⭐
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-emerald-400 to-cyan-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-xl transform hover:scale-110 transition-transform duration-300">
-                    10
-                  </div>
-                  <div className="w-12 h-12 bg-gradient-to-r from-purple-400 to-indigo-500 rounded-full flex items-center justify-center text-lg font-bold text-white shadow-xl transform hover:scale-110 transition-transform duration-300">
-                    💎
-                  </div>
-                </div>
-                
-                {/* Enhanced text */}
-                <div className="text-center">
-                  <span className="text-emerald-300 font-bold text-xl bg-gradient-to-r from-emerald-300 to-cyan-300 bg-clip-text text-transparent">
-                    New users get 10 free credits
-                  </span>
-                  <div className="text-emerald-400 font-extrabold text-2xl mt-1">
-                    worth $10 💸
-                  </div>
-                </div>
-                
-                {/* Pulse effect */}
-                <div className="w-8 h-8 bg-emerald-400/30 rounded-full animate-pulse flex items-center justify-center">
-                  <div className="w-4 h-4 bg-emerald-400 rounded-full animate-ping"></div>
-                </div>
+          {/* Free Credits Promotion */}
+          <div className="bg-gray-50 border border-gray-200 rounded-2xl px-8 py-6" style={{
+            backgroundColor: 'var(--tg-theme-bg-color, #f9fafb)',
+            borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
+          }}>
+            <div className="flex items-center justify-center gap-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-yellow-100 rounded-full flex items-center justify-center text-lg">⭐</div>
+                <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-lg font-bold">10</div>
+                <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center text-lg">💎</div>
               </div>
               
-              {/* Shine effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+              <div className="text-center">
+                <span className="text-green-600 font-bold text-xl">New users get 10 free credits</span>
+                <div className="text-green-700 font-bold text-lg">worth $10</div>
+              </div>
             </div>
           </div>
         </div>
 
-        {/* Enhanced Features Section - UIVERSE Style */}
-        <div className="grid md:grid-cols-3 gap-8 mb-20">
+        {/* Features Section */}
+        <div className="grid md:grid-cols-3 gap-8 mb-16">
           {/* AI-Powered Planning Card */}
-          <div className="group relative overflow-hidden">
-            {/* Animated border */}
-            <div className="absolute inset-0 bg-gradient-to-r from-purple-500 via-pink-500 to-purple-500 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow"></div>
-            
-            <div className="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-purple-400/40 transition-all duration-500 hover:scale-105 h-80 flex flex-col justify-between">
-              {/* Floating particles */}
-              <div className="absolute top-4 right-4 w-2 h-2 bg-purple-400 rounded-full animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="absolute bottom-6 left-4 w-1.5 h-1.5 bg-pink-400 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 to-pink-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              <div className="relative z-10">
-                {/* Enhanced icon with rotation */}
-                <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
-                    <svg className="w-10 h-10 text-white group-hover:animate-pulse" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9M19 19H5V3H13V9H19Z"/>
-                    </svg>
-                  </div>
-                  {/* Orbiting elements */}
-                  <div className="absolute -top-2 -right-2 w-4 h-4 bg-purple-400/50 rounded-full animate-bounce opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                  <div className="absolute -bottom-2 -left-2 w-3 h-3 bg-pink-400/60 rounded-full animate-bounce delay-300 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-                </div>
-                
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-purple-200 transition-colors duration-300">
-                  AI-Powered Planning
-                </h3>
-              </div>
-              
-              <p className="text-gray-300 leading-relaxed relative z-10 group-hover:text-gray-200 transition-colors duration-300">
-                Advanced AI creates personalized itineraries based on your preferences, budget, and travel style.
-              </p>
-              
-              {/* Hover shine effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 text-center hover:shadow-lg transition-shadow" style={{
+            backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
+            borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
+          }}>
+            <div className="w-16 h-16 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-purple-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C13.1 2 14 2.9 14 4C14 5.1 13.1 6 12 6C10.9 6 10 5.1 10 4C10 2.9 10.9 2 12 2ZM21 9V7L15 1H5C3.89 1 3 1.89 3 3V19A2 2 0 0 0 5 21H19A2 2 0 0 0 21 19V9M19 19H5V3H13V9H19Z"/>
+              </svg>
             </div>
+            
+            <h3 className="text-xl font-semibold mb-3" style={{
+              color: 'var(--tg-theme-text-color, #111827)'
+            }}>AI-Powered Planning</h3>
+            
+            <p className="text-gray-600" style={{
+              color: 'var(--tg-theme-text-color, #6b7280)'
+            }}>
+              Advanced AI creates personalized itineraries based on your preferences, budget, and travel style.
+            </p>
           </div>
 
           {/* Interactive Maps Card */}
-          <div className="group relative overflow-hidden">
-            {/* Animated border */}
-            <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-blue-500 to-cyan-500 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow-reverse"></div>
-            
-            <div className="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-cyan-400/40 transition-all duration-500 hover:scale-105 h-80 flex flex-col justify-between">
-              {/* Floating particles */}
-              <div className="absolute top-6 left-6 w-2 h-2 bg-cyan-400 rounded-full animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="absolute bottom-4 right-6 w-1.5 h-1.5 bg-blue-400 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-blue-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              <div className="relative z-10">
-                {/* Enhanced icon with pulse */}
-                <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-cyan-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
-                    <svg className="w-10 h-10 text-white group-hover:animate-spin" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M12,4A8,8 0 0,1 20,12A8,8 0 0,1 12,20A8,8 0 0,1 4,12A8,8 0 0,1 12,4M12,6A6,6 0 0,0 6,12A6,6 0 0,0 12,18A6,6 0 0,0 18,12A6,6 0 0,0 12,6Z"/>
-                    </svg>
-                  </div>
-                  {/* Ripple effect */}
-                  <div className="absolute inset-0 bg-cyan-400/20 rounded-full animate-ping opacity-0 group-hover:opacity-60 transition-opacity duration-300"></div>
-                </div>
-                
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-cyan-200 transition-colors duration-300">
-                  Interactive Maps
-                </h3>
-              </div>
-              
-              <p className="text-gray-300 leading-relaxed relative z-10 group-hover:text-gray-200 transition-colors duration-300">
-                Visualize your entire trip on beautiful interactive maps with photos and detailed location information.
-              </p>
-              
-              {/* Hover shine effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 text-center hover:shadow-lg transition-shadow" style={{
+            backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
+            borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
+          }}>
+            <div className="w-16 h-16 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-blue-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M15,19L9,16.89V5L15,7.11M20.5,3C20.44,3 20.39,3 20.34,3L15,5.1L9,3L3.36,4.9C3.15,4.97 3,5.15 3,5.38V20.5A0.5,0.5 0 0,0 3.5,21C3.55,21 3.61,21 3.66,21L9,18.9L15,21L20.64,19.1C20.85,19.03 21,18.85 21,18.62V3.5A0.5,0.5 0 0,0 20.5,3Z"/>
+              </svg>
             </div>
+            
+            <h3 className="text-xl font-semibold mb-3" style={{
+              color: 'var(--tg-theme-text-color, #111827)'
+            }}>Interactive Maps</h3>
+            
+            <p className="text-gray-600" style={{
+              color: 'var(--tg-theme-text-color, #6b7280)'
+            }}>
+              Visualize your entire trip on beautiful interactive maps with photos and detailed location information.
+            </p>
           </div>
 
           {/* Export & Share Card */}
-          <div className="group relative overflow-hidden">
-            {/* Animated border */}
-            <div className="absolute inset-0 bg-gradient-to-r from-emerald-500 via-green-500 to-emerald-500 rounded-3xl opacity-20 group-hover:opacity-40 transition-opacity duration-300 blur animate-spin-slow"></div>
-            
-            <div className="relative bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-3xl p-8 text-center border border-white/10 backdrop-blur-xl hover:border-emerald-400/40 transition-all duration-500 hover:scale-105 h-80 flex flex-col justify-between">
-              {/* Floating particles */}
-              <div className="absolute top-5 right-5 w-2 h-2 bg-emerald-400 rounded-full animate-ping opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              <div className="absolute bottom-5 left-5 w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-              
-              {/* Gradient overlay on hover */}
-              <div className="absolute inset-0 bg-gradient-to-br from-emerald-500/10 to-green-500/10 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-              
-              <div className="relative z-10">
-                {/* Enhanced icon with scale */}
-                <div className="relative mb-6">
-                  <div className="w-20 h-20 bg-gradient-to-br from-emerald-500 to-green-600 rounded-2xl flex items-center justify-center mx-auto shadow-2xl group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                    <svg className="w-10 h-10 text-white group-hover:animate-bounce" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
-                    </svg>
-                  </div>
-                  {/* Success checkmark on hover */}
-                  <div className="absolute -top-1 -right-1 w-6 h-6 bg-green-400 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-0 group-hover:scale-100">
-                    <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-                      <path d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"/>
-                    </svg>
-                  </div>
-                </div>
-                
-                <h3 className="text-2xl font-bold text-white mb-4 group-hover:text-emerald-200 transition-colors duration-300">
-                  Export & Share
-                </h3>
-              </div>
-              
-              <p className="text-gray-300 leading-relaxed relative z-10 group-hover:text-gray-200 transition-colors duration-300">
-                Export your itineraries to PDF or share them with friends. Access offline when you're traveling.
-              </p>
-              
-              {/* Hover shine effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent skew-x-12 transform -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out"></div>
+          <div className="bg-white rounded-lg border border-gray-200 p-6 text-center hover:shadow-lg transition-shadow" style={{
+            backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
+            borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
+          }}>
+            <div className="w-16 h-16 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-4">
+              <svg className="w-8 h-8 text-green-600" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z"/>
+              </svg>
             </div>
+            
+            <h3 className="text-xl font-semibold mb-3" style={{
+              color: 'var(--tg-theme-text-color, #111827)'
+            }}>Export & Share</h3>
+            
+            <p className="text-gray-600" style={{
+              color: 'var(--tg-theme-text-color, #6b7280)'
+            }}>
+              Export your itineraries to PDF or share them with friends. Access offline when you're traveling.
+            </p>
           </div>
         </div>
 
@@ -748,26 +593,41 @@ const LandingPage: React.FC = () => {
       </main>
 
       {/* Footer */}
-      <footer className="relative z-10 bg-slate-900/60 backdrop-blur-xl border-t border-white/10 mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <footer className="border-t border-gray-200 bg-white mt-16" style={{
+        backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
+        borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
+      }}>
+        <div className="max-w-7xl mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-3 mb-6 md:mb-0">
-              <div className="w-8 h-8 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-                <span className="text-white font-bold">AI</span>
+            <div className="flex items-center space-x-2 mb-4 md:mb-0">
+              <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center" style={{
+                backgroundColor: 'var(--tg-theme-button-color, #2563eb)'
+              }}>
+                <span className="text-white text-xs">🤖</span>
               </div>
-              <span className="font-bold text-white text-lg">AI Travel Planner</span>
+              <span className="font-medium" style={{
+                color: 'var(--tg-theme-text-color, #111827)'
+              }}>AI Travel Planner</span>
             </div>
-            <div className="flex space-x-8">
-              <Link href="/privacy" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105">
+            <div className="flex space-x-6">
+              <Link href="/privacy" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
+                color: 'var(--tg-theme-text-color, #6b7280)'
+              }}>
                 Privacy Policy
               </Link>
-              <Link href="/credits" className="text-gray-300 hover:text-white transition-all duration-300 hover:scale-105">
+              <Link href="/credits" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
+                color: 'var(--tg-theme-text-color, #6b7280)'
+              }}>
                 Credit Policy
               </Link>
             </div>
           </div>
-          <div className="text-center mt-8 pt-8 border-t border-white/10">
-            <p className="text-gray-400">
+          <div className="text-center mt-6 pt-6 border-t border-gray-200" style={{
+            borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
+          }}>
+            <p className="text-gray-500 text-sm" style={{
+              color: 'var(--tg-theme-text-color, #6b7280)'
+            }}>
               © 2025 AI Travel Planner • Powered by Telegram • Made with ❤️ for travelers
             </p>
           </div>
