@@ -96,3 +96,5 @@ temp/
 
 # Local Netlify folder
 .netlify
+
+.vscode/

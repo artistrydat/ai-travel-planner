@@ -3,43 +3,31 @@
 import React from 'react';
 import Link from 'next/link';
 import { RealtimeCredits } from '@/components/auxiliary/RealtimeCredits';
+import { useSEO } from '../../hooks/useSEO';
+import { siteMetadata } from '../../data/metadata';
+import Header from '../../components/common/Header';
+import Footer from '../../components/common/Footer';
 
 const CreditPolicyPage: React.FC = () => {
+  // SEO Hook
+  useSEO('credits');
+  
   return (
     <div className="min-h-screen bg-white" style={{
       backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
       color: 'var(--tg-theme-text-color, #000000)'
     }}>
       
-      {/* Simple Header */}
-      <header className="border-b border-gray-200">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <span className="text-xl">🤖</span>
-              <span className="font-bold" style={{color: 'var(--tg-theme-text-color, #000000)'}}>
-                AI Travel Planner
-              </span>
-            </div>
-            <Link 
-              href="/landing"
-              className="text-gray-600 hover:text-gray-900 transition-colors"
-            >
-              ← Back to Home
-            </Link>
-          </div>
-        </div>
-      </header>
+      <Header variant="minimal" />
       
       <main className="flex-1 px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          {/* Page Header */}
           <div className="text-center mb-12">
             <h1 className="text-4xl font-bold mb-4" style={{color: 'var(--tg-theme-text-color, #000000)'}}>
-              Credit System
+              Credit Collections
             </h1>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Understand how our credit system works, pricing, usage, and refund policies for AI Travel Planner services.
+              Understand how our sophisticated credit system works, with transparent pricing, flexible usage, and premium support for your travel curation needs.
             </p>
           </div>
 
@@ -288,13 +276,9 @@ const CreditPolicyPage: React.FC = () => {
           <div className="text-center">
             <Link 
               href="/credit-store" 
-              className="inline-flex items-center px-6 py-3 rounded-lg font-semibold transition-colors"
-              style={{
-                backgroundColor: 'var(--tg-theme-button-color, #0088cc)',
-                color: 'var(--tg-theme-button-text-color, #ffffff)'
-              }}
+              className="inline-flex items-center px-8 py-4 rounded-xl font-light transition-all duration-300 bg-gradient-to-r from-amber-500 to-orange-600 text-white hover:shadow-xl tracking-wide"
             >
-              <span className="mr-2">💳</span>
+              <span className="mr-2">{siteMetadata.logo}</span>
               Purchase Credits
               <svg className="w-4 h-4 ml-2" fill="currentColor" viewBox="0 0 20 20">
                 <path fillRule="evenodd" d="M10.293 3.293a1 1 0 011.414 0l6 6a1 1 0 010 1.414l-6 6a1 1 0 01-1.414-1.414L14.586 11H3a1 1 0 110-2h11.586l-4.293-4.293a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -304,32 +288,7 @@ const CreditPolicyPage: React.FC = () => {
         </div>
       </main>
 
-      {/* Simple Footer */}
-      <footer className="border-t border-gray-200 bg-gray-50">
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <span className="text-xl">🤖</span>
-              <span className="font-bold" style={{color: 'var(--tg-theme-text-color, #000000)'}}>
-                AI Travel Planner
-              </span>
-            </div>
-            <div className="flex space-x-6">
-              <Link href="/landing" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Home
-              </Link>
-              <Link href="/privacy" className="text-gray-600 hover:text-gray-900 transition-colors">
-                Privacy Policy
-              </Link>
-            </div>
-          </div>
-          <div className="text-center mt-6 pt-6 border-t border-gray-200">
-            <p className="text-gray-500 text-sm">
-              © 2025 AI Travel Planner • Powered by Telegram • Made with ❤️ for travelers
-            </p>
-          </div>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };

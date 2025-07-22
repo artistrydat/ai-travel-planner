@@ -2,8 +2,15 @@
 
 import Link from 'next/link';
 import { useEffect } from 'react';
+import { useSEO } from '../../hooks/useSEO';
+import { siteMetadata } from '../../data/metadata';
+import Header from '../../components/common/Header';
+import Footer from '../../components/common/Footer';
 
 const PrivacyPolicyPage: React.FC = () => {
+  // SEO Hook
+  useSEO('privacy');
+  
   useEffect(() => {
     // Apply Telegram WebApp theme colors if available
     if (typeof window !== 'undefined') {
@@ -24,38 +31,7 @@ const PrivacyPolicyPage: React.FC = () => {
       color: 'var(--tg-theme-text-color, #000000)'
     }}>
 
-      {/* Header */}
-      <header className="border-b border-gray-200 bg-white" style={{
-        backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
-        borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
-      }}>
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <Link href="/landing" className="flex items-center space-x-3 hover:opacity-70 transition-opacity">
-              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center" style={{
-                backgroundColor: 'var(--tg-theme-button-color, #2563eb)'
-              }}>
-                <span className="text-white text-sm">🤖</span>
-              </div>
-              <h1 className="text-lg font-semibold" style={{
-                color: 'var(--tg-theme-text-color, #000000)'
-              }}>AI Travel Planner</h1>
-            </Link>
-            <nav className="flex space-x-6">
-              <Link href="/landing" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
-                color: 'var(--tg-theme-text-color, #6b7280)'
-              }}>
-                Home
-              </Link>
-              <Link href="/credits" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
-                color: 'var(--tg-theme-text-color, #6b7280)'
-              }}>
-                Credit Policy
-              </Link>
-            </nav>
-          </div>
-        </div>
-      </header>
+      <Header variant="minimal" />
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-4 py-12">
@@ -74,7 +50,7 @@ const PrivacyPolicyPage: React.FC = () => {
             <h1 className="text-3xl font-bold mb-4" style={{
               color: 'var(--tg-theme-text-color, #111827)'
             }}>
-              Privacy Policy
+              Privacy Charter
             </h1>
             
             <p className="text-gray-600 text-sm" style={{
@@ -189,57 +165,16 @@ const PrivacyPolicyPage: React.FC = () => {
           </p>
           <Link 
             href="/landing"
-            className="inline-flex items-center gap-2 bg-blue-600 text-white font-medium py-3 px-6 rounded-lg hover:bg-blue-700 transition-colors"
-            style={{
-              backgroundColor: 'var(--tg-theme-button-color, #2563eb)'
-            }}
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-amber-500 to-orange-600 text-white font-medium py-3 px-6 rounded-lg hover:shadow-xl transition-all duration-300"
           >
-            <span>🚀</span>
-            <span>Back to AI Travel Planner</span>
+            <span>{siteMetadata.logo}</span>
+            <span>Back to {siteMetadata.title}</span>
           </Link>
         </div>
         </div>
-      </main>      {/* Footer */}
-      <footer className="border-t border-gray-200 bg-white mt-16" style={{
-        backgroundColor: 'var(--tg-theme-bg-color, #ffffff)',
-        borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
-      }}>
-        <div className="max-w-4xl mx-auto px-4 py-8">
-          <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-6 h-6 bg-blue-600 rounded-lg flex items-center justify-center" style={{
-                backgroundColor: 'var(--tg-theme-button-color, #2563eb)'
-              }}>
-                <span className="text-white text-xs">🤖</span>
-              </div>
-              <span className="font-medium" style={{
-                color: 'var(--tg-theme-text-color, #111827)'
-              }}>AI Travel Planner</span>
-            </div>
-            <div className="flex space-x-6">
-              <Link href="/landing" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
-                color: 'var(--tg-theme-text-color, #6b7280)'
-              }}>
-                Home
-              </Link>
-              <Link href="/credits" className="text-gray-600 hover:text-gray-900 transition-colors text-sm" style={{
-                color: 'var(--tg-theme-text-color, #6b7280)'
-              }}>
-                Credit Policy
-              </Link>
-            </div>
-          </div>
-          <div className="text-center mt-6 pt-6 border-t border-gray-200" style={{
-            borderColor: 'var(--tg-theme-text-color, #e5e7eb)'
-          }}>
-            <p className="text-gray-500 text-sm" style={{
-              color: 'var(--tg-theme-text-color, #6b7280)'
-            }}>
-              © 2025 AI Travel Planner • Powered by Telegram • Made with ❤️ for travelers
-            </p>
-          </div>
-        </div>
-      </footer>
+      </main>      
+      
+      <Footer />
     </div>
   );
 };
