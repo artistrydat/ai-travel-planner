@@ -24,9 +24,19 @@ const ActivityCard: React.FC<{ activity: Activity, isSelected: boolean, onClick:
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
                 <div className="absolute top-1.5 left-1.5 bg-amber-400 text-black text-xs font-bold px-1.5 py-0.5 rounded-full shadow-md">Day {activity.day}</div>
                 <div className="absolute top-1.5 right-1.5 bg-black/50 text-white text-xs font-bold px-1.5 py-0.5 rounded-full backdrop-blur-sm">{activity.startTime}</div>
-                <div className={`absolute bottom-1.5 right-1.5 p-1.5 rounded-full shadow transition-colors ${isSelected ? 'bg-pink-500' : 'bg-white/90'}`}>
+                <button 
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        const mapsUrl = activity.latitude && activity.longitude 
+                            ? `https://www.google.com/maps/search/?api=1&query=${activity.latitude},${activity.longitude}`
+                            : `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(activity.title)}`;
+                        window.open(mapsUrl, '_blank');
+                    }}
+                    className={`absolute bottom-1.5 right-1.5 p-1.5 rounded-full shadow transition-colors hover:scale-110 ${isSelected ? 'bg-pink-500 hover:bg-pink-600' : 'bg-white/90 hover:bg-white'}`}
+                    title="Open in Google Maps"
+                >
                     <Icon name="map-pin" className={`w-4 h-4 transition-colors ${isSelected ? 'text-white' : 'text-indigo-600'}`} />
-                </div>
+                </button>
             </div>
             <div className="bg-slate-800 p-3">
                 <h3 className="font-bold text-base truncate text-white">{activity.title}</h3>
