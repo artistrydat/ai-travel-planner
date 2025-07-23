@@ -11,14 +11,11 @@ import Hero from '../../components/landing/Hero';
 import Features from '../../components/landing/Features';
 import Itineraries from '../../components/landing/Itineraries';
 import Footer from '../../components/landing/Footer';
-import Privacy from '../../components/landing/Privacy';
-import TermsOfService from '../../components/landing/TermsOfService';
 
 interface SearchItem {
   destination: string;
   createdAt: number;
 }
-type Page = 'home' | 'privacy' | 'terms';
 
 const LandingPage: React.FC = () => {
   const router = useRouter();
@@ -44,28 +41,16 @@ const LandingPage: React.FC = () => {
       alert('Please open this app through Telegram to get started with your 10 free credits!');
     }
   };
-  const [currentPage, setCurrentPage] = useState<Page>('home');
-  
-  const navigateTo = (page: Page) => {
-    setCurrentPage(page);
-    window.scrollTo(0, 0);
-  };
 
   return (
-<div className="bg-[#F9FAF8]">
+    <div className="bg-[#F9FAF8]">
       <Header />
       <main>
-        {currentPage === 'home' && (
-          <>
-            <Hero />
-            <Features />
-            <Itineraries />
-          </>
-        )}
-        {currentPage === 'privacy' && <Privacy onNavigate={() => navigateTo('home')} />}
-        {currentPage === 'terms' && <TermsOfService onNavigate={() => navigateTo('home')} isTelegramApp={!!isTelegram} />}
+        <Hero />
+        <Features />
+        <Itineraries />
       </main>
-      <Footer onNavigate={navigateTo} />
+      <Footer useDirectLinks={true} />
     </div>
   );
 };
