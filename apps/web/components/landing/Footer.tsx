@@ -15,10 +15,10 @@ const Footer: React.FC<FooterProps> = ({ onNavigate, useDirectLinks = false }) =
             <div className="flex gap-4">
                 {useDirectLinks ? (
                     <>
-                        <Link href="/landing/privacy" className="hover:text-white transition-colors">
+                        <Link href="/privacy" className="hover:text-white transition-colors">
                             Privacy Policy
                         </Link>
-                        <Link href="/landing/terms" className="hover:text-white transition-colors">
+                        <Link href="/terms" className="hover:text-white transition-colors">
                             Terms of Service
                         </Link>
                     </>

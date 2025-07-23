@@ -10,6 +10,7 @@ import Map from '../components/mainpage/Map';
 import ItineraryCarousel from '../components/itinerary/ItineraryCarousel';
 import TelegramGuard from '../components/auxiliary/TelegramGuard';
 import WelcomeNotification from '../components/mainpage/WelcomeNotification';
+import Footer from '../components/landing/Footer';
 
 import { useMutation } from '@tanstack/react-query';
 import { generateItinerary } from '../lib/actions';
@@ -295,6 +296,11 @@ const App: React.FC = () => {
               <span className="block sm:inline">{error}</span>
             </div>
          )}
+
+         {/* Footer */}
+         <div className="absolute bottom-0 left-0 right-0 z-20">
+           <Footer useDirectLinks={true} />
+         </div>
       </div>
     </TelegramGuard>
   );
