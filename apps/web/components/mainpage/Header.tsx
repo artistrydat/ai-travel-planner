@@ -8,7 +8,7 @@ import { useUserByTelegramId } from '../../hooks/useConvexQueries';
 
 const Header: React.FC = () => {
   const { user } = useUserStore();
-  const { openProfileModal } = useUIStore();
+  const { openProfileModal, openCreditsModal } = useUIStore();
   
   // Use reactive Convex query for live credits
   const { data: liveUser, isLoading: userLoading } = useUserByTelegramId(user?.telegramId || null);
@@ -23,12 +23,16 @@ const Header: React.FC = () => {
          </div>
       </div>
       <div className="flex items-center gap-1">
-        <div className="flex items-center gap-1 bg-gray-900/30 backdrop-blur-sm px-2 py-1 rounded-lg text-white shadow-sm border border-white/5">
+        <button
+          onClick={openCreditsModal}
+          className="flex items-center gap-1 bg-gray-900/30 backdrop-blur-sm px-2 py-1 rounded-lg text-white shadow-sm border border-white/5 hover:bg-white/10 transition-colors"
+          title="Buy more credits"
+        >
           <Icon name="coin" className="w-4 h-4 text-amber-400" />
           <span className="font-semibold text-sm">
             {userLoading ? '...' : liveCredits}
           </span>
-        </div>
+        </button>
         <button
           onClick={openProfileModal}
           className="bg-gray-900/30 backdrop-blur-sm p-1.5 rounded-lg text-white shadow-sm hover:bg-white/10 transition-colors border border-white/5"

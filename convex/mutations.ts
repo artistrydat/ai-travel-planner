@@ -203,3 +203,40 @@ export const deleteExportedFile = mutation({
     await ctx.db.delete(fileId);
   },
 });
+
+// Feature request mutations
+export const createFeatureRequest = mutation({
+  args: {
+    userId: v.id('users'),
+    title: v.string(),
+    description: v.string(),
+    category: v.string(),
+    priority: v.string(),
+    userEmail: v.optional(v.string()),
+  },
+  handler: async (ctx, args) => {
+    const now = Date.now();
+    
+    const requestId = await ctx.db.insert('featureRequests', {
+      ...args,
+      status: 'Submitted',
+      createdAt: now,
+      updatedAt: now,
+    });
+    
+    return requestId;
+  },
+});
+
+export const updateFeatureRequestStatus = mutation({
+  args: {
+    requestId: v.id('featureRequests'),
+    status: v.string(),
+  },
+  handler: async (ctx, { requestId, status }) => {
+    await ctx.db.patch(requestId, {
+      status,
+      updatedAt: Date.now(),
+    });
+  },
+});

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ThrillizLogo, StarIcon } from './icons';
-import CreditsModal from './CreditsModal';
+import UnifiedCreditsModal from '../shared/UnifiedCreditsModal';
 
 const Header: React.FC = () => {
   const [isCreditsModalOpen, setCreditsModalOpen] = useState(false);
@@ -26,7 +26,11 @@ const Header: React.FC = () => {
           </div>
         </div>
       </header>
-      <CreditsModal isOpen={isCreditsModalOpen} onClose={() => setCreditsModalOpen(false)} />
+      <UnifiedCreditsModal 
+        isOpen={isCreditsModalOpen} 
+        onClose={() => setCreditsModalOpen(false)} 
+        isLandingPage={true}
+      />
     </>
   );
 };

@@ -5,6 +5,8 @@ type UIState = {
   isProfileModalOpen: boolean;
   isItineraryViewOpen: boolean;
   isExportModalOpen: boolean;
+  isFeatureRequestModalOpen: boolean;
+  isCreditsModalOpen: boolean;
   selectedActivityIndex: number | null;
   error: string | null;
 };
@@ -17,6 +19,10 @@ type UIActions = {
   closeItinerary: () => void;
   openExportModal: () => void;
   closeExportModal: () => void;
+  openFeatureRequestModal: () => void;
+  closeFeatureRequestModal: () => void;
+  openCreditsModal: () => void;
+  closeCreditsModal: () => void;
   setSelectedActivityIndex: (index: number | null) => void;
   setError: (error: string | null) => void;
 };
@@ -28,6 +34,8 @@ export const useUIStore = create<UIState & UIActions>((set) => ({
   isProfileModalOpen: false,
   isItineraryViewOpen: false,
   isExportModalOpen: false,
+  isFeatureRequestModalOpen: false,
+  isCreditsModalOpen: false,
   selectedActivityIndex: null,
   error: null,
   
@@ -41,6 +49,12 @@ export const useUIStore = create<UIState & UIActions>((set) => ({
 
   openExportModal: () => set({ isExportModalOpen: true }),
   closeExportModal: () => set({ isExportModalOpen: false }),
+
+  openFeatureRequestModal: () => set({ isFeatureRequestModalOpen: true }),
+  closeFeatureRequestModal: () => set({ isFeatureRequestModalOpen: false }),
+
+  openCreditsModal: () => set({ isCreditsModalOpen: true }),
+  closeCreditsModal: () => set({ isCreditsModalOpen: false }),
 
   setSelectedActivityIndex: (index) => set({ selectedActivityIndex: index }),
 

@@ -58,7 +58,9 @@ export const MapPinIcon: React.FC<IconProps> = ({ className }) => (
 
 export const RouteIcon: React.FC<IconProps> = ({ className }) => (
     <svg className={className} fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 3v18m12-18v18M6 9h12M6 15h12M6 3h12a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V5a2 2 0 012-2z"></path>
+        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 7c3 0 3 3 6 3s3-3 6-3 3 3 6 3M3 17c3 0 3-3 6-3s3 3 6 3 3-3 6-3"></path>
+        <circle cx="5" cy="7" r="1" fill="currentColor"></circle>
+        <circle cx="19" cy="17" r="1" fill="currentColor"></circle>
     </svg>
 );
 

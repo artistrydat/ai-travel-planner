@@ -247,3 +247,25 @@ export const getExpiredFiles = query({
       .collect();
   },
 });
+
+// Feature request queries
+export const getUserFeatureRequests = query({
+  args: { userId: v.id('users') },
+  handler: async (ctx, { userId }) => {
+    return await ctx.db
+      .query('featureRequests')
+      .withIndex('by_user', (q) => q.eq('userId', userId))
+      .order('desc')
+      .collect();
+  },
+});
+
+export const getAllFeatureRequests = query({
+  args: {},
+  handler: async (ctx) => {
+    return await ctx.db
+      .query('featureRequests')
+      .order('desc')
+      .collect();
+  },
+});

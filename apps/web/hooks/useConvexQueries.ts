@@ -156,3 +156,37 @@ export const useCreateUser = () => {
     },
   });
 };
+
+// Feature request hooks
+export const useUserFeatureRequests = (userId: Id<"users"> | null) => {
+  return useQuery({
+    queryKey: ['userFeatureRequests', userId],
+    queryFn: async () => {
+      if (!userId) return [];
+      return await convex.query(api.queries.getUserFeatureRequests, { userId });
+    },
+    enabled: !!userId,
+    staleTime: 5 * 60 * 1000, // 5 minutes
+  });
+};
+
+export const useCreateFeatureRequest = () => {
+  const queryClient = useQueryClient();
+  
+  return useMutation({
+    mutationFn: async (data: {
+      userId: Id<"users">;
+      title: string;
+      description: string;
+      category: string;
+      priority: string;
+      userEmail?: string;
+    }) => {
+      return await convex.mutation(api.mutations.createFeatureRequest, data);
+    },
+    onSuccess: (_, variables) => {
+      // Invalidate feature requests queries
+      queryClient.invalidateQueries({ queryKey: ['userFeatureRequests', variables.userId] });
+    },
+  });
+};

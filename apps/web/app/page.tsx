@@ -6,11 +6,14 @@ import PlannerControls from '../components/mainpage/PlannerControls';
 import ItineraryView from '../components/itinerary/ItineraryView';
 import ProfileModal from '../components/profile/ProfileModal';
 import ExportModal from '../components/auxiliary/ExportModal';
+import FeatureRequestModal from '../components/auxiliary/FeatureRequestModal';
+import UnifiedCreditsModal from '../components/shared/UnifiedCreditsModal';
 import Map from '../components/mainpage/Map';
 import ItineraryCarousel from '../components/itinerary/ItineraryCarousel';
 import TelegramGuard from '../components/auxiliary/TelegramGuard';
 import WelcomeNotification from '../components/mainpage/WelcomeNotification';
 import Footer from '../components/landing/Footer';
+import { Icon } from '../components/common/Icon';
 
 import { useMutation } from '@tanstack/react-query';
 import { generateItinerary } from '../lib/actions';
@@ -46,10 +49,14 @@ const App: React.FC = () => {
     isItineraryViewOpen, 
     isProfileModalOpen, 
     isExportModalOpen, 
+    isFeatureRequestModalOpen,
+    isCreditsModalOpen,
     error,
     setPlannerMode, 
     closeProfileModal, 
+    closeCreditsModal,
     openItinerary,
+    openFeatureRequestModal,
     setError,
     setSelectedActivityIndex,
   } = useUIStore();
@@ -277,6 +284,8 @@ const App: React.FC = () => {
         {/* Modals */}
         <ProfileModal isOpen={isProfileModalOpen} onClose={closeProfileModal} />
         <ExportModal isOpen={isExportModalOpen} />
+        <FeatureRequestModal isOpen={isFeatureRequestModalOpen} />
+        <UnifiedCreditsModal isOpen={isCreditsModalOpen} onClose={closeCreditsModal} />
 
          {/* Loading and Error states */}
          {mutation.isPending && (
@@ -299,8 +308,19 @@ const App: React.FC = () => {
 
          {/* Footer */}
          <div className="absolute bottom-0 left-0 right-0 z-20">
+           <div className="flex justify-center pb-4">
+             <button
+               onClick={openFeatureRequestModal}
+               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all transform hover:scale-105"
+               title="Request a feature"
+             >
+               <Icon name="lightbulb" className="w-5 h-5" />
+               <span className="font-medium">Request Feature</span>
+             </button>
+           </div>
            <Footer useDirectLinks={true} />
          </div>
+
       </div>
     </TelegramGuard>
   );

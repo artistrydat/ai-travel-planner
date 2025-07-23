@@ -1,9 +1,8 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import { useQuery } from 'convex/react';
 import { api } from '../../convex/_generated/api';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTelegramWebApp } from '../../hooks/useTelegramWebApp';
 import Header from '../../components/landing/Header';
@@ -12,18 +11,11 @@ import Features from '../../components/landing/Features';
 import Itineraries from '../../components/landing/Itineraries';
 import Footer from '../../components/landing/Footer';
 
-interface SearchItem {
-  destination: string;
-  createdAt: number;
-}
 
 const LandingPage: React.FC = () => {
   const router = useRouter();
   const { isTelegram, isReady, user, webApp } = useTelegramWebApp();
   
-  // Query recent searches for popular destinations
-  const recentSearches = useQuery(api.queries.getRecentPopularSearches) || [];
-
   useEffect(() => {
     // Apply basic Telegram theme if available
     if (isTelegram && webApp) {

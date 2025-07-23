@@ -81,4 +81,19 @@ export default defineSchema({
     expiresAt: v.optional(v.number()), // Optional expiration timestamp
   }).index('by_user', ['userId'])
     .index('by_storage_id', ['storageId']),
+
+  // Feature requests
+  featureRequests: defineTable({
+    userId: v.id('users'),
+    title: v.string(),
+    description: v.string(),
+    category: v.string(), // e.g., "UI/UX", "New Feature", "Bug Fix", "Integration"
+    priority: v.string(), // e.g., "Low", "Medium", "High", "Critical"
+    userEmail: v.optional(v.string()),
+    status: v.string(), // e.g., "Submitted", "Under Review", "In Progress", "Completed", "Rejected"
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  }).index('by_user', ['userId'])
+    .index('by_status', ['status'])
+    .index('by_category', ['category']),
 });
