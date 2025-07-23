@@ -158,6 +158,17 @@ export const getSearchHistoryById = query({
   },
 });
 
+export const getAllItineraries = query({
+  handler: async (ctx) => {
+    const itineraries = await ctx.db
+      .query("searchHistory")
+      .order('desc')
+      .collect();
+    
+    return itineraries;
+  },
+});
+
 export const getDestinationItineraries = query({
   args: { destinationSlug: v.string() },
   handler: async (ctx, args) => {
