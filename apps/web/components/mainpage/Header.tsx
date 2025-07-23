@@ -20,7 +20,7 @@ const Header: React.FC = () => {
       <div>
          <div className="flex items-center gap-1 bg-gray-900/30 backdrop-blur-sm p-1 pr-2 rounded-lg text-white shadow-sm border border-white/5">
             <VoyageAILogo className="w-4 h-4 text-indigo-400"/>
-            <span className="font-semibold text-sm bg-gradient-to-r from-indigo-400 to-pink-400 text-transparent bg-clip-text">VoyageAI</span>
+            <span className="font-semibold text-sm bg-gradient-to-r from-indigo-400 to-pink-400 text-transparent bg-clip-text">AI Trip Planner</span>
          </div>
       </div>
       <div className="flex items-center gap-1">

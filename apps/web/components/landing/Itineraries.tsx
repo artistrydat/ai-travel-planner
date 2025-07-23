@@ -304,7 +304,7 @@ const Itineraries: React.FC = () => {
                 <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="text-center mb-12">
                         <h2 className="text-4xl lg:text-5xl font-extrabold text-[#0a4848] tracking-tight">
-                            Find Your Next Adventure
+                            Explore similar Next Adventure
                         </h2>
                         <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
                             Loading amazing travel itineraries...
@@ -328,7 +328,7 @@ const Itineraries: React.FC = () => {
                             Find Your Next Adventure
                         </h2>
                         <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
-                            Explore curated itineraries for every adventurer. Filter by activity, difficulty, and more to find your perfect trip.
+                            Explore curated itineraries for every adventurer. Filter by activity, difficulty, and to see more perfect trips.
                         </p>
                     </div>
                     <div className="text-center py-16 px-4">
@@ -341,14 +341,14 @@ const Itineraries: React.FC = () => {
     }
 
     return (
-        <section className="bg-[#F9FAF8] py-20 lg:py-28" id="itineraries">
+        <section className="bg-[#F9FAF8] py-12 lg:py-16" id="itineraries">
             <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Section Header */}
-                <div className="text-center mb-12">
-                    <h2 className="text-4xl lg:text-5xl font-extrabold text-[#0a4848] tracking-tight">
+                <div className="text-center mb-10">
+                    <h2 className="text-3xl lg:text-4xl font-extrabold text-[#0a4848] tracking-tight">
                         Find Your Next Adventure
                     </h2>
-                    <p className="mt-4 max-w-2xl mx-auto text-lg text-gray-600">
+                    <p className="mt-3 max-w-2xl mx-auto text-base text-gray-600 leading-relaxed">
                         Explore curated itineraries for every adventurer. Filter by activity, difficulty, and more to find your perfect trip.
                     </p>
                 </div>
