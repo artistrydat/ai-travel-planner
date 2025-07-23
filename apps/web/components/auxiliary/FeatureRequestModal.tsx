@@ -123,17 +123,17 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose}>
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-2xl max-h-[90vh] overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[80vh] overflow-hidden">
         {/* Header */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-6 py-4 text-white">
+        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 px-4 py-3 text-white">
           <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-3">
-              <div className="bg-white/20 p-2 rounded-lg">
-                <Icon name="lightbulb" className="w-6 h-6" />
+            <div className="flex items-center space-x-2">
+              <div className="bg-white/20 p-1.5 rounded-lg">
+                <Icon name="lightbulb" className="w-4 h-4" />
               </div>
               <div>
-                <h2 className="text-xl font-bold">Request a Feature</h2>
-                <p className="text-indigo-100 text-sm">Help us make the app better for everyone!</p>
+                <h2 className="text-lg font-bold">Request Feature</h2>
+                <p className="text-indigo-100 text-xs">Help us improve!</p>
               </div>
             </div>
             <button
@@ -141,16 +141,16 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
               disabled={isSubmitting}
               className="text-white/70 hover:text-white transition-colors disabled:opacity-50"
             >
-              <Icon name="x" className="w-6 h-6" />
+              <Icon name="x" className="w-5 h-5" />
             </button>
           </div>
         </div>
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="p-6 space-y-6 overflow-y-auto max-h-[calc(90vh-100px)]">
+        <form onSubmit={handleSubmit} className="p-4 space-y-4 overflow-y-auto max-h-[calc(80vh-80px)]">
           {/* Title */}
           <div>
-            <label htmlFor="title" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="title" className="block text-xs font-semibold text-gray-700 mb-1">
               Feature Title *
             </label>
             <input
@@ -160,16 +160,16 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
               value={formData.title}
               onChange={handleInputChange}
               placeholder="e.g., Add dark mode support"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm"
               disabled={isSubmitting}
               required
             />
           </div>
 
           {/* Category and Priority */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label htmlFor="category" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="category" className="block text-xs font-semibold text-gray-700 mb-1">
                 Category
               </label>
               <select
@@ -177,7 +177,7 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
                 name="category"
                 value={formData.category}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm"
                 disabled={isSubmitting}
               >
                 {categories.map(cat => (
@@ -187,7 +187,7 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
             </div>
 
             <div>
-              <label htmlFor="priority" className="block text-sm font-semibold text-gray-700 mb-2">
+              <label htmlFor="priority" className="block text-xs font-semibold text-gray-700 mb-1">
                 Priority
               </label>
               <select
@@ -195,7 +195,7 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
                 name="priority"
                 value={formData.priority}
                 onChange={handleInputChange}
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm"
                 disabled={isSubmitting}
               >
                 {priorities.map(priority => (
@@ -207,28 +207,25 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
 
           {/* Description */}
           <div>
-            <label htmlFor="description" className="block text-sm font-semibold text-gray-700 mb-2">
-              Detailed Description *
+            <label htmlFor="description" className="block text-xs font-semibold text-gray-700 mb-1">
+              Description *
             </label>
             <textarea
               id="description"
               name="description"
               value={formData.description}
               onChange={handleInputChange}
-              placeholder="Please describe the feature you'd like to see, including why it would be useful and any specific details about how it should work..."
-              rows={5}
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-vertical"
+              placeholder="Describe the feature you'd like to see..."
+              rows={3}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all resize-vertical text-sm"
               disabled={isSubmitting}
               required
             />
-            <p className="text-xs text-gray-500 mt-1">
-              The more details you provide, the better we can understand and implement your request.
-            </p>
           </div>
 
           {/* Email */}
           <div>
-            <label htmlFor="userEmail" className="block text-sm font-semibold text-gray-700 mb-2">
+            <label htmlFor="userEmail" className="block text-xs font-semibold text-gray-700 mb-1">
               Email (Optional)
             </label>
             <input
@@ -238,32 +235,29 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
               value={formData.userEmail}
               onChange={handleInputChange}
               placeholder="your.email@example.com"
-              className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all"
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all text-sm"
               disabled={isSubmitting}
             />
-            <p className="text-xs text-gray-500 mt-1">
-              We'll use this to update you on the status of your request.
-            </p>
           </div>
 
           {/* Submit Button */}
-          <div className="flex justify-end space-x-3 pt-4 border-t">
+          <div className="flex justify-end space-x-2 pt-3 border-t">
             <button
               type="button"
               onClick={handleClose}
               disabled={isSubmitting}
-              className="px-6 py-3 text-gray-600 hover:text-gray-800 font-medium transition-colors disabled:opacity-50"
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 font-medium transition-colors disabled:opacity-50 text-sm"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={isSubmitting || !formData.title.trim() || !formData.description.trim()}
-              className="px-8 py-3 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2"
+              className="px-6 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white font-semibold rounded-lg hover:from-indigo-700 hover:to-purple-700 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-2 text-sm"
             >
               {isSubmitting ? (
                 <>
-                  <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <svg className="animate-spin h-3 w-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
                   </svg>
@@ -271,8 +265,8 @@ const FeatureRequestModal: React.FC<FeatureRequestModalProps> = ({ isOpen }) => 
                 </>
               ) : (
                 <>
-                  <Icon name="send" className="w-4 h-4" />
-                  <span>Submit Request</span>
+                  <Icon name="send" className="w-3 h-3" />
+                  <span>Submit</span>
                 </>
               )}
             </button>

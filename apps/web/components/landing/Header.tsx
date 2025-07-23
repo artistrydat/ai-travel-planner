@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ThrillizLogo, StarIcon } from './icons';
+import { VoyageAILogo, StarIcon } from '../shared/Logo';
 import UnifiedCreditsModal from '../shared/UnifiedCreditsModal';
 
 const Header: React.FC = () => {
@@ -11,8 +11,8 @@ const Header: React.FC = () => {
         <div className="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center shrink-0">
-              <ThrillizLogo />
-              <span className="ml-3 text-2xl font-extrabold text-[#0a4848]">Thrilliz</span>
+              <VoyageAILogo />
+              <span className="ml-3 text-2xl font-extrabold text-[#0a4848]">VoyageAI</span>
             </div>
             <div className="flex items-center space-x-2 shrink-0">
               <button 

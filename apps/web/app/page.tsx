@@ -12,7 +12,6 @@ import Map from '../components/mainpage/Map';
 import ItineraryCarousel from '../components/itinerary/ItineraryCarousel';
 import TelegramGuard from '../components/auxiliary/TelegramGuard';
 import WelcomeNotification from '../components/mainpage/WelcomeNotification';
-import Footer from '../components/landing/Footer';
 import { Icon } from '../components/common/Icon';
 
 import { useMutation } from '@tanstack/react-query';
@@ -307,21 +306,17 @@ const App: React.FC = () => {
          )}
 
          {/* Footer */}
-         <div className="absolute bottom-0 left-0 right-0 z-20">
-           <div className="flex justify-center pb-4">
+         <div className="absolute bottom-4 left-4 z-20">
              <button
                onClick={openFeatureRequestModal}
-               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-6 py-3 rounded-full shadow-lg flex items-center space-x-2 transition-all transform hover:scale-105"
+               className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white p-3 rounded-full shadow-lg transition-all transform hover:scale-105"
                title="Request a feature"
              >
                <Icon name="lightbulb" className="w-5 h-5" />
-               <span className="font-medium">Request Feature</span>
              </button>
-           </div>
-           <Footer useDirectLinks={true} />
          </div>
-
       </div>
+
     </TelegramGuard>
   );
 };
