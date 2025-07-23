@@ -8,6 +8,7 @@ import { useTelegramWebApp } from '../../hooks/useTelegramWebApp';
 import Header from '../../components/landing/Header';
 import Hero from '../../components/landing/Hero';
 import Features from '../../components/landing/Features';
+import HowItWorks from '../../components/landing/HowItWorks';
 import Itineraries from '../../components/landing/Itineraries';
 import Footer from '../../components/landing/Footer';
 
@@ -40,6 +41,7 @@ const LandingPage: React.FC = () => {
       <main>
         <Hero />
         <Features />
+        <HowItWorks />
         <Itineraries />
       </main>
       <Footer useDirectLinks={true} />

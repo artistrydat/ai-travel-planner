@@ -12,7 +12,7 @@ const Header: React.FC = () => {
           <div className="flex items-center justify-between h-20">
             <div className="flex items-center shrink-0">
               <VoyageAILogo />
-              <span className="ml-3 text-2xl font-extrabold text-[#0a4848]">VoyageAI</span>
+              <span className="ml-3 text-2xl font-extrabold text-[#0a4848]">AI Trip Planner</span>
             </div>
             <div className="flex items-center space-x-2 shrink-0">
               <button 
@@ -20,7 +20,7 @@ const Header: React.FC = () => {
                 className="hidden sm:flex items-center space-x-2 bg-yellow-100 text-yellow-800 font-bold px-4 py-2 rounded-full text-sm hover:bg-yellow-200 transition-all duration-200"
               >
                 <StarIcon className="w-5 h-5 text-yellow-500" />
-                <span>credits pricing</span>
+                <span>⭐ Credits</span>
               </button>
             </div>
           </div>

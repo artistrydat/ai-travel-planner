@@ -22,23 +22,23 @@ const Features: React.FC = () => {
   const features: FeatureCardProps[] = [
     {
       icon: <GuideIcon className="w-10 h-10" />,
-      title: 'Comprehensive Adventure Guides',
-      description: 'Discover well-researched, easy-to-follow hiking and adventure guides for all skill levels.'
+      title: 'Zero Downloads Required',
+      description: 'No app needed! Operate 100% within Telegram. Start in 1 click: Launch the bot, type /start, and begin planning.'
     },
     {
       icon: <ExpertTipsIcon className="w-10 h-10" />,
-      title: 'Adventure Tips from Expert',
-      description: 'Get tips from seasoned outdoors experts to enhance your experience and safety.'
+      title: 'AI-Powered & Lightning Fast',
+      description: 'Faster than Google: Generate full itineraries (flights, hotels, activities) in under 10 seconds. Smarter than humans.'
     },
     {
       icon: <PersonalizedIcon className="w-10 h-10" />,
-      title: 'Personalized Recommendations',
-      description: 'Find trails and adventures matched to your interests and skill level for the perfect experience.'
+      title: 'Telegram-Powered Payments',
+      description: 'Seamless checkout via Telegram\'s native STAR payment system. Pay-per-trip pricing with no subscriptions.'
     },
     {
       icon: <CommunityIcon className="w-10 h-10" />,
-      title: 'Interactive Hikers Community',
-      description: 'Connect, share tips, and learn from a community of passionate outdoor enthusiasts.'
+      title: 'Export & Share Effortlessly',
+      description: 'One-click export: Download plans as PDF, Text, or Calendar (.ics) files. Auto-sync to Google/Apple Calendar.'
     }
   ];
 
@@ -54,18 +54,18 @@ const Features: React.FC = () => {
           <div className="relative px-8 py-12 lg:py-20 flex flex-col lg:flex-row lg:items-center justify-between">
             <div className="lg:w-3/5 text-center lg:text-left">
               <p className="font-semibold text-gray-200">
-                <span className="text-yellow-400 mr-2">•</span> What We Do?
+                <span className="text-yellow-400 mr-2">•</span> How It Works
               </p>
               <h2 className="mt-4 text-4xl lg:text-5xl font-extrabold tracking-tight">
-                Your Ultimate Guide to <br/> Unforgettable Hiking and Outdoor Adventures
+                Revolutionize Travel Planning <br/> Right Inside Telegram
               </h2>
               <p className="mt-6 text-lg text-gray-300 max-w-2xl mx-auto lg:mx-0">
-                Exciting platform dedicated to hiking and outdoor adventure enthusiasts, offering curated guides, breathtaking trail recommendations, and expert tips to make every journey memorable.
+                90% cheaper than travel agents. Privacy-first with Telegram's encryption. Real-time travel data via Google Flights & Google Maps. No hidden fees – pay only for what you use.
               </p>
             </div>
             <div className="mt-8 lg:mt-0">
               <button className="flex items-center px-8 py-4 bg-white text-[#0a4848] font-bold rounded-full hover:bg-gray-200 transition-transform transform hover:scale-105 shadow-lg whitespace-nowrap">
-                Know Us More
+                Try Bot Now
                 <ArrowRightIcon className="ml-3 w-5 h-5" />
               </button>
             </div>
