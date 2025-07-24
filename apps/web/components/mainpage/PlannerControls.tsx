@@ -105,7 +105,7 @@ const PlannerControls: React.FC<PlannerControlsProps> = ({
         {/* Top bar with toggle and itinerary button */}
         <div className="flex items-center justify-center gap-2 bg-gray-900/60 backdrop-blur-md p-1 rounded-full shadow-lg border border-white/10">
             <div className="flex items-center gap-1.5 text-white px-1.5">
-                <span className="text-xs font-medium">Day Mode</span>
+                <span className="text-xs font-medium">Agent Mode</span>
                 <button
                     onClick={() => setPlannerMode(!isPlannerMode)}
                     className={`relative inline-flex h-5 w-9 items-center rounded-full transition-colors ${
